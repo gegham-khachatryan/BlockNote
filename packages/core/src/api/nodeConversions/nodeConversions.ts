@@ -216,10 +216,13 @@ function contentNodeToInlineContent(contentNode: Node) {
 
     const styles: Styles = {};
     let linkMark: Mark | undefined;
+    let commentMark: Mark | undefined;
 
     for (const mark of node.marks) {
       if (mark.type.name === "link") {
         linkMark = mark;
+      } else if (mark.type.name === "comment") {
+        commentMark = mark;
       } else if (toggleStyles.has(mark.type.name as ToggledStyle)) {
         styles[mark.type.name as ToggledStyle] = true;
       } else if (colorStyles.has(mark.type.name as ColorStyle)) {
@@ -234,7 +237,23 @@ function contentNodeToInlineContent(contentNode: Node) {
     if (currentContent) {
       // Current content is text.
       if (currentContent.type === "text") {
-        if (!linkMark) {
+        if (linkMark) {
+          // Node is a link (different type to current content).
+          content.push(currentContent);
+          currentContent = {
+            type: "link",
+            href: linkMark.attrs.href,
+            content: [
+              {
+                type: "text",
+                text: node.textContent,
+                styles,
+              },
+            ],
+          };
+        } else if (commentMark) {
+          content.push(currentContent);
+        } else {
           // Node is text (same type as current content).
           if (
             JSON.stringify(currentContent.styles) === JSON.stringify(styles)
@@ -250,20 +269,6 @@ function contentNodeToInlineContent(contentNode: Node) {
               styles,
             };
           }
-        } else {
-          // Node is a link (different type to current content).
-          content.push(currentContent);
-          currentContent = {
-            type: "link",
-            href: linkMark.attrs.href,
-            content: [
-              {
-                type: "text",
-                text: node.textContent,
-                styles,
-              },
-            ],
-          };
         }
       } else if (currentContent.type === "link") {
         // Current content is a link.
