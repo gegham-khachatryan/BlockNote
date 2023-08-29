@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import container from "markdown-it-container";
 import {
   defineConfig,
+  type DefaultTheme,
   type HeadConfig,
   type TransformContext,
 } from "vitepress";
@@ -27,9 +28,11 @@ const SIDEBAR_DEFAULT = [
     collapsed: false,
     items: [
       { text: "Customizing the Editor", link: "/docs/editor" },
-      { text: "Slash Menu", link: "/docs/slash-menu" },
+      { text: "Theming & Styling", link: "/docs/theming" },
       { text: "Formatting Toolbar", link: "/docs/formatting-toolbar" },
+      { text: "Slash Menu", link: "/docs/slash-menu" },
       { text: "Side Menu", link: "/docs/side-menu" },
+      { text: "Changing UI Elements", link: "/docs/ui-elements" },
     ],
   },
   {
@@ -75,6 +78,7 @@ const SIDEBAR_DEFAULT = [
         text: "Real-time collaboration",
         link: "/docs/real-time-collaboration",
       },
+      { text: "Next.js", link: "/docs/nextjs" },
       {
         text: "Without React (vanilla JS)",
         link: "/docs/vanilla-js",
@@ -161,7 +165,12 @@ export default defineConfig({
     //     "/docs/:path",
     //   text: "Edit this page",
     // },
-    algolia: getAlgoliaConfig(process.env),
+    search: {
+      provider: "algolia",
+      options: getAlgoliaConfig(
+        process.env
+      ) as DefaultTheme.AlgoliaSearchOptions,
+    },
     socialLinks: [
       { icon: "github", link: "https://github.com/TypeCellOS/BlockNote" },
       // { icon: "twitter", link: "https://twitter.com/TypeCellOS" },
@@ -305,7 +314,7 @@ function transformHead({ pageData }: TransformContext): HeadConfig[] {
 function getAlgoliaConfig(env: NodeJS.ProcessEnv) {
   if (env.VITE_ALGOLIA_ID && env.VITE_ALGOLIA_KEY) {
     return {
-      indexName: "blocknote",
+      indexName: "blockjs",
       appId: env.VITE_ALGOLIA_ID,
       apiKey: env.VITE_ALGOLIA_KEY,
     };
