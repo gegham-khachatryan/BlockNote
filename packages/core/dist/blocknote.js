@@ -1,150 +1,285 @@
-var Nt = Object.defineProperty;
-var Lt = (o, e, t) => e in o ? Nt(o, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : o[e] = t;
-var h = (o, e, t) => (Lt(o, typeof e != "symbol" ? e + "" : e, t), t);
-import { Node as R, InputRule as V, mergeAttributes as x, Extension as v, findChildren as j, combineTransactionSteps as Ht, getChangedRanges as Ot, findChildrenInRange as Dt, Mark as st, findParentNode as Ft, isTextSelection as Rt, isNodeSelection as zt, posToDOMRect as at, getMarkRange as Q, extensions as N, Editor as Ut } from "@tiptap/core";
-import { PluginKey as E, Plugin as C, TextSelection as tt, Selection as G, NodeSelection as $t } from "prosemirror-state";
-import { Slice as T, Fragment as P, DOMSerializer as q, DOMParser as Gt } from "prosemirror-model";
-import { v4 as jt } from "uuid";
-import lt from "rehype-parse";
-import qt from "rehype-remark";
-import dt from "rehype-stringify";
-import ct from "remark-gfm";
-import Wt from "remark-parse";
-import Vt from "remark-rehype";
-import Yt from "remark-stringify";
-import { unified as Y } from "unified";
-import { fromDom as et } from "hast-util-from-dom";
-import { Bold as Kt } from "@tiptap/extension-bold";
-import { Code as Jt } from "@tiptap/extension-code";
-import Xt from "@tiptap/extension-collaboration";
-import Zt from "@tiptap/extension-collaboration-cursor";
-import { Dropcursor as Qt } from "@tiptap/extension-dropcursor";
-import { Gapcursor as te } from "@tiptap/extension-gapcursor";
-import { HardBreak as ee } from "@tiptap/extension-hard-break";
-import { History as oe } from "@tiptap/extension-history";
-import { Italic as ne } from "@tiptap/extension-italic";
-import { Link as ut } from "@tiptap/extension-link";
-import { Strike as re } from "@tiptap/extension-strike";
-import { Text as ie } from "@tiptap/extension-text";
-import { Underline as se } from "@tiptap/extension-underline";
-import * as ae from "prosemirror-view";
-import { Decoration as D, DecorationSet as F } from "prosemirror-view";
-const ht = "_blockOuter_xgzwr_5", pt = "_block_xgzwr_5", ft = "_reactNodeViewRenderer_xgzwr_17", mt = "_blockContent_xgzwr_22", gt = "_blockGroup_xgzwr_42", kt = "_isEmpty_xgzwr_240", yt = "_inlineContent_xgzwr_240", bt = "_isFilter_xgzwr_241", vt = "_hasAnchor_xgzwr_263", k = {
-  blockOuter: ht,
-  block: pt,
-  reactNodeViewRenderer: ft,
-  blockContent: mt,
-  blockGroup: gt,
-  isEmpty: kt,
-  inlineContent: yt,
-  isFilter: bt,
-  hasAnchor: vt
-}, Vo = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
-  __proto__: null,
-  block: pt,
-  blockContent: mt,
-  blockGroup: gt,
-  blockOuter: ht,
-  default: k,
-  hasAnchor: vt,
-  inlineContent: yt,
-  isEmpty: kt,
-  isFilter: bt,
-  reactNodeViewRenderer: ft
-}, Symbol.toStringTag, { value: "Module" }));
-function ot(o) {
-  return "data-" + o.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+var Pt = Object.defineProperty;
+var Ot = (n, e, t) => e in n ? Pt(n, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[e] = t;
+var u = (n, e, t) => (Ot(n, typeof e != "symbol" ? e + "" : e, t), t);
+import { Extension as T, Mark as lt, Node as U, InputRule as K, mergeAttributes as A, combineTransactionSteps as Dt, getChangedRanges as Rt, findChildrenInRange as Vt, findChildren as tt, findParentNode as zt, extensions as L, isTextSelection as Ut, isNodeSelection as Ft, posToDOMRect as q, getMarkRange as et, Editor as Gt } from "@tiptap/core";
+import { Bold as $t } from "@tiptap/extension-bold";
+import { Code as jt } from "@tiptap/extension-code";
+import qt from "@tiptap/extension-collaboration";
+import Wt from "@tiptap/extension-collaboration-cursor";
+import { Dropcursor as Yt } from "@tiptap/extension-dropcursor";
+import { Gapcursor as Kt } from "@tiptap/extension-gapcursor";
+import { HardBreak as Jt } from "@tiptap/extension-hard-break";
+import { History as Xt } from "@tiptap/extension-history";
+import { Italic as Zt } from "@tiptap/extension-italic";
+import { Link as Qt } from "@tiptap/extension-link";
+import { Strike as te } from "@tiptap/extension-strike";
+import { Text as ee } from "@tiptap/extension-text";
+import { Underline as oe } from "@tiptap/extension-underline";
+import { Slice as x, Fragment as _, DOMSerializer as W, DOMParser as ne } from "prosemirror-model";
+import { PluginKey as M, Plugin as w, TextSelection as ot, Selection as j, NodeSelection as re } from "prosemirror-state";
+import { v4 as ie } from "uuid";
+import * as se from "prosemirror-view";
+import { Decoration as V, DecorationSet as z } from "prosemirror-view";
+import dt from "rehype-parse";
+import ae from "rehype-remark";
+import ct from "rehype-stringify";
+import ut from "remark-gfm";
+import le from "remark-parse";
+import de, { defaultHandlers as ce } from "remark-rehype";
+import ue from "remark-stringify";
+import { unified as J } from "unified";
+import { fromDom as nt } from "hast-util-from-dom";
+const pe = "_bnEditor_1pmoa_3", he = "_bnRoot_1pmoa_19", fe = "_defaultStyles_1pmoa_34", me = "_dragPreview_1pmoa_57", H = {
+  bnEditor: pe,
+  bnRoot: he,
+  defaultStyles: fe,
+  dragPreview: me,
+  "collaboration-cursor__caret": "_collaboration-cursor__caret_1pmoa_63",
+  "collaboration-cursor__label": "_collaboration-cursor__label_1pmoa_74"
+};
+function pt(n) {
+  const e = n.attrs.id, t = n.firstChild, o = t.type, r = n.childCount === 2 ? n.lastChild.childCount : 0;
+  return {
+    id: e,
+    node: n,
+    contentNode: t,
+    contentType: o,
+    numChildBlocks: r
+  };
 }
-function le(o) {
+function k(n, e) {
+  const o = n.nodeSize - 2;
+  if (e <= 1)
+    for (e = 1 + 1; n.resolve(e).parent.type.name !== "blockContainer" && e < o; )
+      e++;
+  else if (e >= o)
+    for (e = o - 1; n.resolve(e).parent.type.name !== "blockContainer" && e > 1; )
+      e--;
+  n.resolve(e).parent.type.name === "blockGroup" && e++;
+  const r = n.resolve(e), i = r.depth;
+  let s = r.node(i), a = i;
+  for (; ; ) {
+    if (a < 0)
+      throw new Error(
+        "Could not find blockContainer node. This can only happen if the underlying BlockNote schema has been edited."
+      );
+    if (s.type.name === "blockContainer")
+      break;
+    a -= 1, s = r.node(a);
+  }
+  const { id: l, contentNode: d, contentType: c, numChildBlocks: h } = pt(s), p = r.start(a), f = r.end(a);
+  return {
+    id: l,
+    node: s,
+    contentNode: d,
+    contentType: c,
+    numChildBlocks: h,
+    startPos: p,
+    endPos: f,
+    depth: a
+  };
+}
+const ke = T.create({
+  name: "blockBackgroundColor",
+  addGlobalAttributes() {
+    return [
+      {
+        types: ["blockContainer"],
+        attributes: {
+          backgroundColor: {
+            default: "default",
+            parseHTML: (n) => n.hasAttribute("data-background-color") ? n.getAttribute("data-background-color") : "default",
+            renderHTML: (n) => n.backgroundColor !== "default" && {
+              "data-background-color": n.backgroundColor
+            }
+          }
+        }
+      }
+    ];
+  },
+  addCommands() {
+    return {
+      setBlockBackgroundColor: (n, e) => ({ state: t, view: o }) => {
+        const r = k(t.doc, n);
+        return r === void 0 ? !1 : (t.tr.setNodeAttribute(
+          r.startPos - 1,
+          "backgroundColor",
+          e
+        ), o.focus(), !0);
+      }
+    };
+  }
+}), ge = lt.create({
+  name: "backgroundColor",
+  addAttributes() {
+    return {
+      color: {
+        default: void 0,
+        parseHTML: (n) => n.getAttribute("data-background-color"),
+        renderHTML: (n) => ({
+          "data-background-color": n.color
+        })
+      }
+    };
+  },
+  parseHTML() {
+    return [
+      {
+        tag: "span",
+        getAttrs: (n) => typeof n == "string" ? !1 : n.hasAttribute("data-background-color") ? { color: n.getAttribute("data-background-color") } : !1
+      }
+    ];
+  },
+  renderHTML({ HTMLAttributes: n }) {
+    return ["span", n, 0];
+  },
+  addCommands() {
+    return {
+      setBackgroundColor: (n) => ({ commands: e }) => n !== "default" ? e.setMark(this.name, { color: n }) : e.unsetMark(this.name)
+    };
+  }
+}), ht = "_blockOuter_7sok8_5", ft = "_block_7sok8_5", mt = "_reactNodeViewRenderer_7sok8_17", kt = "_blockContent_7sok8_22", gt = "_blockGroup_7sok8_42", bt = "_isEmpty_7sok8_240", yt = "_inlineContent_7sok8_240", vt = "_isFilter_7sok8_241", Ct = "_hasAnchor_7sok8_263", y = {
+  blockOuter: ht,
+  block: ft,
+  reactNodeViewRenderer: mt,
+  blockContent: kt,
+  blockGroup: gt,
+  isEmpty: bt,
+  inlineContent: yt,
+  isFilter: vt,
+  hasAnchor: Ct
+}, Jo = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  block: ft,
+  blockContent: kt,
+  blockGroup: gt,
+  blockOuter: ht,
+  default: y,
+  hasAnchor: Ct,
+  inlineContent: yt,
+  isEmpty: bt,
+  isFilter: vt,
+  reactNodeViewRenderer: mt
+}, Symbol.toStringTag, { value: "Module" })), be = () => /Mac/.test(navigator.platform) || /AppleWebKit/.test(navigator.userAgent) && /Mobile\/\w+/.test(navigator.userAgent);
+function Xo(n) {
+  return be() ? n.replace("Mod", "⌘") : n.replace("Mod", "Ctrl");
+}
+function v(...n) {
+  return n.filter((e) => e).join(" ");
+}
+class ye extends Error {
+  constructor(e) {
+    super(`Unreachable case: ${e}`);
+  }
+}
+function rt(n) {
+  return "data-" + n.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+}
+function ve(n) {
   const e = {};
-  return Object.entries(o.propSchema).forEach(([t, n]) => {
+  return Object.entries(n.propSchema).forEach(([t, o]) => {
     e[t] = {
-      default: n.default,
+      default: o.default,
       keepOnSplit: !0,
       // Props are displayed in kebab-case as HTML attributes. If a prop's
       // value is the same as its default, we don't display an HTML
       // attribute for it.
-      parseHTML: (r) => r.getAttribute(ot(t)),
-      renderHTML: (r) => r[t] !== n.default ? {
-        [ot(t)]: r[t]
+      parseHTML: (r) => r.getAttribute(rt(t)),
+      renderHTML: (r) => r[t] !== o.default ? {
+        [rt(t)]: r[t]
       } : {}
     };
   }), e;
 }
-function de(o) {
+function Ce(n) {
   return [
     {
-      tag: "div[data-content-type=" + o.type + "]"
+      tag: "div[data-content-type=" + n.type + "]"
     }
   ];
 }
-function ce(o, e) {
+function we(n, e) {
   const t = document.createElement("div");
-  t.setAttribute("data-content-type", o.type);
+  t.setAttribute("data-content-type", n.type);
   for (const [r, i] of Object.entries(e))
     t.setAttribute(r, i);
-  let n;
-  return o.containsInlineContent ? (n = document.createElement("div"), t.appendChild(n)) : n = void 0, n !== void 0 ? {
+  let o;
+  return n.containsInlineContent ? (o = document.createElement("div"), t.appendChild(o)) : o = void 0, o !== void 0 ? {
     dom: t,
-    contentDOM: n
+    contentDOM: o
   } : {
     dom: t
   };
 }
-function Yo(o) {
+function Zo(n) {
   return {
-    node: H({
-      name: o.type,
-      content: o.containsInlineContent ? "inline*" : "",
-      selectable: o.containsInlineContent,
-      addOptions() {
-        return {
-          editor: void 0
-        };
-      },
+    node: O({
+      name: n.type,
+      content: n.containsInlineContent ? "inline*" : "",
+      selectable: n.containsInlineContent,
       addAttributes() {
-        return le(o);
+        return ve(n);
       },
       parseHTML() {
-        return de(o);
+        return Ce(n);
       },
       renderHTML({ HTMLAttributes: t }) {
-        return ce(o, t);
+        return we(n, t);
       },
       addNodeView() {
-        return ({ HTMLAttributes: t, getPos: n }) => {
-          const r = document.createElement("div");
-          r.className = k.blockContent, r.setAttribute("data-content-type", o.type);
-          for (const [p, f] of Object.entries(t))
-            r.setAttribute(p, f);
-          const i = this.options.editor;
-          if (typeof n == "boolean")
+        return ({ HTMLAttributes: t, getPos: o }) => {
+          var f, m;
+          const r = document.createElement("div"), i = ((f = this.options.domAttributes) == null ? void 0 : f.blockContent) || {};
+          for (const [g, b] of Object.entries(
+            i
+          ))
+            g !== "class" && r.setAttribute(g, b);
+          r.className = v(
+            y.blockContent,
+            i.class
+          ), r.setAttribute("data-content-type", n.type);
+          for (const [g, b] of Object.entries(t))
+            r.setAttribute(g, b);
+          const s = this.options.editor;
+          if (typeof o == "boolean")
             throw new Error(
               "Cannot find node position as getPos is a boolean, not a function."
             );
-          const a = n(), d = i._tiptapEditor.state.doc.resolve(a).node().attrs.id, c = i.getBlock(d);
-          if (c.type !== o.type)
+          const a = o(), c = s._tiptapEditor.state.doc.resolve(a).node().attrs.id, h = s.getBlock(c);
+          if (h.type !== n.type)
             throw new Error("Block type does not match");
-          const u = o.render(c, i);
-          return "contentDOM" in u && (u.contentDOM.className = `${u.contentDOM.className ? u.contentDOM.className + " " : ""}${k.inlineContent}`), r.appendChild(u.dom), "contentDOM" in u ? {
+          const p = n.render(h, s);
+          if ("contentDOM" in p) {
+            const g = ((m = this.options.domAttributes) == null ? void 0 : m.inlineContent) || {};
+            for (const [b, C] of Object.entries(
+              g
+            ))
+              b !== "class" && p.contentDOM.setAttribute(b, C);
+            p.contentDOM.className = v(
+              p.contentDOM.className,
+              y.inlineContent,
+              g.class
+            );
+          }
+          return r.appendChild(p.dom), "contentDOM" in p ? {
             dom: r,
-            contentDOM: u.contentDOM
+            contentDOM: p.contentDOM
           } : {
             dom: r
           };
         };
       }
     }),
-    propSchema: o.propSchema
+    propSchema: n.propSchema
   };
 }
-function H(o) {
-  return R.create({
-    ...o,
+function O(n) {
+  return U.create({
+    ...n,
     group: "blockContent"
   });
 }
-const ue = H({
+const Me = O({
   name: "heading",
   content: "inline*",
   addAttributes() {
@@ -152,24 +287,24 @@ const ue = H({
       level: {
         default: "1",
         // instead of "level" attributes, use "data-level"
-        parseHTML: (o) => o.getAttribute("data-level"),
-        renderHTML: (o) => ({
-          "data-level": o.level
+        parseHTML: (n) => n.getAttribute("data-level"),
+        renderHTML: (n) => ({
+          "data-level": n.level
         })
       }
     };
   },
   addInputRules() {
     return [
-      ...["1", "2", "3"].map((o) => new V({
-        find: new RegExp(`^(#{${parseInt(o)}})\\s$`),
-        handler: ({ state: e, chain: t, range: n }) => {
+      ...["1", "2", "3"].map((n) => new K({
+        find: new RegExp(`^(#{${parseInt(n)}})\\s$`),
+        handler: ({ state: e, chain: t, range: o }) => {
           t().BNUpdateBlock(e.selection.from, {
             type: "heading",
             props: {
-              level: o
+              level: n
             }
-          }).deleteRange({ from: n.from, to: n.to });
+          }).deleteRange({ from: o.from, to: o.to });
         }
       }))
     ];
@@ -193,50 +328,39 @@ const ue = H({
       }
     ];
   },
-  renderHTML({ node: o, HTMLAttributes: e }) {
+  renderHTML({ node: n, HTMLAttributes: e }) {
+    var r, i;
+    const t = ((r = this.options.domAttributes) == null ? void 0 : r.blockContent) || {}, o = ((i = this.options.domAttributes) == null ? void 0 : i.inlineContent) || {};
     return [
       "div",
-      x(e, {
-        class: k.blockContent,
+      A(e, {
+        class: v(
+          y.blockContent,
+          t.class
+        ),
         "data-content-type": this.name
       }),
-      ["h" + o.attrs.level, { class: k.inlineContent }, 0]
+      [
+        "h" + n.attrs.level,
+        {
+          class: v(
+            y.inlineContent,
+            o.class
+          )
+        },
+        0
+      ]
     ];
   }
-});
-function g(o, e) {
-  if (e < 0 || e > o.nodeSize)
-    return;
-  const t = o.resolve(e), n = t.depth;
-  let r = t.node(n), i = n;
-  for (; ; ) {
-    if (i < 0)
-      return;
-    if (r.type.name === "blockContainer")
-      break;
-    i -= 1, r = t.node(i);
-  }
-  const a = r.attrs.id, s = r.firstChild, l = s.type, d = r.childCount === 2 ? r.lastChild.childCount : 0, c = t.start(i), u = t.end(i);
-  return {
-    id: a,
-    node: r,
-    contentNode: s,
-    contentType: l,
-    numChildBlocks: d,
-    startPos: c,
-    endPos: u,
-    depth: i
-  };
-}
-const Et = (o) => {
-  const { node: e, contentType: t } = g(
-    o.state.doc,
-    o.state.selection.from
-  ), n = o.state.selection.anchor === o.state.selection.head;
-  return !t.name.endsWith("ListItem") || !n ? !1 : o.commands.first(({ state: r, chain: i, commands: a }) => [
+}), wt = (n) => {
+  const { node: e, contentType: t } = k(
+    n.state.doc,
+    n.state.selection.from
+  ), o = n.state.selection.anchor === n.state.selection.head;
+  return !t.name.endsWith("ListItem") || !o ? !1 : n.commands.first(({ state: r, chain: i, commands: s }) => [
     () => (
       // Changes list item block to a text block if the content is empty.
-      a.command(() => e.textContent.length === 0 ? a.BNUpdateBlock(r.selection.from, {
+      s.command(() => e.textContent.length === 0 ? s.BNUpdateBlock(r.selection.from, {
         type: "paragraph",
         props: {}
       }) : !1)
@@ -244,19 +368,19 @@ const Et = (o) => {
     () => (
       // Splits the current block, moving content inside that's after the cursor to a new block of the same type
       // below.
-      a.command(() => e.textContent.length > 0 ? (i().deleteSelection().BNSplitBlock(r.selection.from, !0).run(), !0) : !1)
+      s.command(() => e.textContent.length > 0 ? (i().deleteSelection().BNSplitBlock(r.selection.from, !0).run(), !0) : !1)
     )
   ]);
-}, he = H({
+}, Se = O({
   name: "bulletListItem",
   content: "inline*",
   addInputRules() {
     return [
       // Creates an unordered list when starting with "-", "+", or "*".
-      new V({
+      new K({
         find: new RegExp("^[-+*]\\s$"),
-        handler: ({ state: o, chain: e, range: t }) => {
-          e().BNUpdateBlock(o.selection.from, {
+        handler: ({ state: n, chain: e, range: t }) => {
+          e().BNUpdateBlock(n.selection.from, {
             type: "bulletListItem",
             props: {}
           }).deleteRange({ from: t.from, to: t.to });
@@ -266,7 +390,7 @@ const Et = (o) => {
   },
   addKeyboardShortcuts() {
     return {
-      Enter: () => Et(this.editor)
+      Enter: () => wt(this.editor)
     };
   },
   parseHTML() {
@@ -274,10 +398,10 @@ const Et = (o) => {
       // Case for regular HTML list structure.
       {
         tag: "li",
-        getAttrs: (o) => {
-          if (typeof o == "string")
+        getAttrs: (n) => {
+          if (typeof n == "string")
             return !1;
-          const e = o.parentElement;
+          const e = n.parentElement;
           return e === null ? !1 : e.tagName === "UL" ? {} : !1;
         },
         node: "bulletListItem"
@@ -285,10 +409,10 @@ const Et = (o) => {
       // Case for BlockNote list structure.
       {
         tag: "p",
-        getAttrs: (o) => {
-          if (typeof o == "string")
+        getAttrs: (n) => {
+          if (typeof n == "string")
             return !1;
-          const e = o.parentElement;
+          const e = n.parentElement;
           return e === null ? !1 : e.getAttribute("data-content-type") === "bulletListItem" ? {} : !1;
         },
         priority: 300,
@@ -296,56 +420,70 @@ const Et = (o) => {
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
+  renderHTML({ HTMLAttributes: n }) {
+    var o, r;
+    const e = ((o = this.options.domAttributes) == null ? void 0 : o.blockContent) || {}, t = ((r = this.options.domAttributes) == null ? void 0 : r.inlineContent) || {};
     return [
       "div",
-      x(o, {
-        class: k.blockContent,
+      A(n, {
+        class: v(
+          y.blockContent,
+          e.class
+        ),
         "data-content-type": this.name
       }),
-      ["p", { class: k.inlineContent }, 0]
+      [
+        "p",
+        {
+          class: v(
+            y.inlineContent,
+            t.class
+          )
+        },
+        0
+      ]
     ];
   }
-}), pe = new E("numbered-list-indexing"), fe = () => new C({
-  key: pe,
-  appendTransaction: (o, e, t) => {
-    const n = t.tr;
-    n.setMeta("numberedListIndexing", !0);
+}), Ee = new M("numbered-list-indexing"), Be = () => new w({
+  key: Ee,
+  appendTransaction: (n, e, t) => {
+    const o = t.tr;
+    o.setMeta("numberedListIndexing", !0);
     let r = !1;
-    return t.doc.descendants((i, a) => {
+    return t.doc.descendants((i, s) => {
       if (i.type.name === "blockContainer" && i.firstChild.type.name === "numberedListItem") {
-        let s = "1";
-        const l = a === 1, d = g(n.doc, a + 1);
+        let a = "1";
+        const l = s === 1, d = k(o.doc, s + 1);
         if (d === void 0)
           return;
         if (!l) {
-          const p = g(n.doc, a - 2);
+          const p = k(o.doc, s - 2);
           if (p === void 0)
             return;
           if (!(d.depth !== p.depth)) {
             const m = p.contentNode;
             if (p.contentType.name === "numberedListItem") {
-              const U = m.attrs.index;
-              s = (parseInt(U) + 1).toString();
+              const C = m.attrs.index;
+              a = (parseInt(C) + 1).toString();
             }
           }
         }
-        d.contentNode.attrs.index !== s && (r = !0, n.setNodeMarkup(a + 1, void 0, {
-          index: s
+        d.contentNode.attrs.index !== a && (r = !0, o.setNodeMarkup(s + 1, void 0, {
+          index: a
         }));
       }
-    }), r ? n : null;
+    }), r ? o : null;
   }
-}), me = H({
+}), Te = O({
   name: "numberedListItem",
   content: "inline*",
   addAttributes() {
     return {
       index: {
         default: null,
-        parseHTML: (o) => o.getAttribute("data-index"),
-        renderHTML: (o) => ({
-          "data-index": o.index
+        parseHTML: (n) => n.getAttribute("data-index"),
+        renderHTML: (n) => ({
+          "data-index": n.index
         })
       }
     };
@@ -353,10 +491,10 @@ const Et = (o) => {
   addInputRules() {
     return [
       // Creates an ordered list when starting with "1.".
-      new V({
+      new K({
         find: new RegExp("^1\\.\\s$"),
-        handler: ({ state: o, chain: e, range: t }) => {
-          e().BNUpdateBlock(o.selection.from, {
+        handler: ({ state: n, chain: e, range: t }) => {
+          e().BNUpdateBlock(n.selection.from, {
             type: "numberedListItem",
             props: {}
           }).deleteRange({ from: t.from, to: t.to });
@@ -366,11 +504,11 @@ const Et = (o) => {
   },
   addKeyboardShortcuts() {
     return {
-      Enter: () => Et(this.editor)
+      Enter: () => wt(this.editor)
     };
   },
   addProseMirrorPlugins() {
-    return [fe()];
+    return [Be()];
   },
   parseHTML() {
     return [
@@ -378,10 +516,10 @@ const Et = (o) => {
       // (e.g.: when pasting from other apps)
       {
         tag: "li",
-        getAttrs: (o) => {
-          if (typeof o == "string")
+        getAttrs: (n) => {
+          if (typeof n == "string")
             return !1;
-          const e = o.parentElement;
+          const e = n.parentElement;
           return e === null ? !1 : e.tagName === "OL" ? {} : !1;
         },
         node: "numberedListItem"
@@ -390,10 +528,10 @@ const Et = (o) => {
       // (e.g.: when pasting from blocknote)
       {
         tag: "p",
-        getAttrs: (o) => {
-          if (typeof o == "string")
+        getAttrs: (n) => {
+          if (typeof n == "string")
             return !1;
-          const e = o.parentElement;
+          const e = n.parentElement;
           return e === null ? !1 : e.getAttribute("data-content-type") === "numberedListItem" ? {} : !1;
         },
         priority: 300,
@@ -401,19 +539,33 @@ const Et = (o) => {
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
+  renderHTML({ HTMLAttributes: n }) {
+    var o, r;
+    const e = ((o = this.options.domAttributes) == null ? void 0 : o.blockContent) || {}, t = ((r = this.options.domAttributes) == null ? void 0 : r.inlineContent) || {};
     return [
       "div",
-      x(o, {
-        class: k.blockContent,
+      A(n, {
+        class: v(
+          y.blockContent,
+          e.class
+        ),
         "data-content-type": this.name
       }),
       // we use a <p> tag, because for <li> tags we'd need to add a <ul> parent for around siblings to be semantically correct,
       // which would be quite cumbersome
-      ["p", { class: k.inlineContent }, 0]
+      [
+        "p",
+        {
+          class: v(
+            y.inlineContent,
+            t.class
+          )
+        },
+        0
+      ]
     ];
   }
-}), ge = H({
+}), xe = O({
   name: "paragraph",
   content: "inline*",
   parseHTML() {
@@ -425,17 +577,36 @@ const Et = (o) => {
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
+  renderHTML({ HTMLAttributes: n }) {
+    var o, r;
+    const e = ((o = this.options.domAttributes) == null ? void 0 : o.blockContent) || {}, t = ((r = this.options.domAttributes) == null ? void 0 : r.inlineContent) || {};
     return [
       "div",
-      x(o, {
-        class: k.blockContent,
-        "data-content-type": this.name
-      }),
-      ["p", { class: k.inlineContent }, 0]
+      A(
+        {
+          ...e,
+          class: v(
+            y.blockContent,
+            e.class
+          ),
+          "data-content-type": this.name
+        },
+        n
+      ),
+      [
+        "p",
+        {
+          ...t,
+          class: v(
+            y.inlineContent,
+            t.class
+          )
+        },
+        0
+      ]
     ];
   }
-}), L = {
+}), P = {
   backgroundColor: {
     default: "transparent"
   },
@@ -447,41 +618,41 @@ const Et = (o) => {
     default: "left",
     values: ["left", "center", "right", "justify"]
   }
-}, ke = {
+}, Mt = {
   paragraph: {
-    propSchema: L,
-    node: ge
+    propSchema: P,
+    node: xe
   },
   heading: {
     propSchema: {
-      ...L,
+      ...P,
       level: { default: "1", values: ["1", "2", "3"] }
     },
-    node: ue
+    node: Me
   },
   bulletListItem: {
-    propSchema: L,
-    node: he
+    propSchema: P,
+    node: Se
   },
   numberedListItem: {
-    propSchema: L,
-    node: me
+    propSchema: P,
+    node: Te
   }
 };
-function ye(o, e = JSON.stringify) {
+function Ae(n, e = JSON.stringify) {
   const t = {};
-  return o.filter((n) => {
-    const r = e(n);
+  return n.filter((o) => {
+    const r = e(o);
     return Object.prototype.hasOwnProperty.call(t, r) ? !1 : t[r] = !0;
   });
 }
-function be(o) {
-  const e = o.filter(
-    (n, r) => o.indexOf(n) !== r
+function Ie(n) {
+  const e = n.filter(
+    (o, r) => n.indexOf(o) !== r
   );
-  return ye(e);
+  return Ae(e);
 }
-const K = v.create({
+const F = T.create({
   name: "uniqueID",
   // we’ll set a very high priority to make sure this runs first
   // and is compatible with `appendTransaction` hooks of other extensions
@@ -490,7 +661,13 @@ const K = v.create({
     return {
       attributeName: "id",
       types: [],
-      generateID: () => window.__TEST_OPTIONS ? (window.__TEST_OPTIONS.mockID === void 0 ? window.__TEST_OPTIONS.mockID = 0 : window.__TEST_OPTIONS.mockID++, window.__TEST_OPTIONS.mockID.toString()) : jt(),
+      generateID: () => {
+        if (typeof window < "u" && window.__TEST_OPTIONS) {
+          const n = window.__TEST_OPTIONS;
+          return n.mockID === void 0 ? n.mockID = 0 : n.mockID++, n.mockID.toString();
+        }
+        return ie();
+      },
       filterTransaction: null
     };
   },
@@ -501,9 +678,9 @@ const K = v.create({
         attributes: {
           [this.options.attributeName]: {
             default: null,
-            parseHTML: (o) => o.getAttribute(`data-${this.options.attributeName}`),
-            renderHTML: (o) => ({
-              [`data-${this.options.attributeName}`]: o[this.options.attributeName]
+            parseHTML: (n) => n.getAttribute(`data-${this.options.attributeName}`),
+            renderHTML: (n) => ({
+              [`data-${this.options.attributeName}`]: n[this.options.attributeName]
             })
           }
         }
@@ -511,69 +688,85 @@ const K = v.create({
     ];
   },
   // check initial content for missing ids
-  onCreate() {
-    if (this.editor.extensionManager.extensions.find(
-      (l) => l.name === "collaboration"
-    ))
-      return;
-    const { view: o, state: e } = this.editor, { tr: t, doc: n } = e, { types: r, attributeName: i, generateID: a } = this.options;
-    j(n, (l) => r.includes(l.type.name) && l.attrs[i] === null).forEach(({ node: l, pos: d }) => {
-      t.setNodeMarkup(d, void 0, {
-        ...l.attrs,
-        [i]: a()
-      });
-    }), t.setMeta("addToHistory", !1), o.dispatch(t);
-  },
+  // onCreate() {
+  //   // Don’t do this when the collaboration extension is active
+  //   // because this may update the content, so Y.js tries to merge these changes.
+  //   // This leads to empty block nodes.
+  //   // See: https://github.com/ueberdosis/tiptap/issues/2400
+  //   if (
+  //     this.editor.extensionManager.extensions.find(
+  //       (extension) => extension.name === "collaboration"
+  //     )
+  //   ) {
+  //     return;
+  //   }
+  //   const { view, state } = this.editor;
+  //   const { tr, doc } = state;
+  //   const { types, attributeName, generateID } = this.options;
+  //   const nodesWithoutId = findChildren(doc, (node) => {
+  //     return (
+  //       types.includes(node.type.name) && node.attrs[attributeName] === null
+  //     );
+  //   });
+  //   nodesWithoutId.forEach(({ node, pos }) => {
+  //     tr.setNodeMarkup(pos, undefined, {
+  //       ...node.attrs,
+  //       [attributeName]: generateID(),
+  //     });
+  //   });
+  //   tr.setMeta("addToHistory", false);
+  //   view.dispatch(tr);
+  // },
   addProseMirrorPlugins() {
-    let o = null, e = !1;
+    let n = null, e = !1;
     return [
-      new C({
-        key: new E("uniqueID"),
-        appendTransaction: (t, n, r) => {
-          const i = t.some((m) => m.docChanged) && !n.doc.eq(r.doc), a = this.options.filterTransaction && t.some((m) => {
-            var b, y;
-            return !(!((y = (b = this.options).filterTransaction) === null || y === void 0) && y.call(b, m));
+      new w({
+        key: new M("uniqueID"),
+        appendTransaction: (t, o, r) => {
+          const i = t.some((m) => m.docChanged) && !o.doc.eq(r.doc), s = this.options.filterTransaction && t.some((m) => {
+            let g, b;
+            return !(!((b = (g = this.options).filterTransaction) === null || b === void 0) && b.call(g, m));
           });
-          if (!i || a)
+          if (!i || s)
             return;
-          const { tr: s } = r, { types: l, attributeName: d, generateID: c } = this.options, u = Ht(
-            n.doc,
+          const { tr: a } = r, { types: l, attributeName: d, generateID: c } = this.options, h = Dt(
+            o.doc,
             t
-          ), { mapping: p } = u;
-          if (Ot(u).forEach(({ newRange: m }) => {
-            const b = Dt(
+          ), { mapping: p } = h;
+          if (Rt(h).forEach(({ newRange: m }) => {
+            const g = Vt(
               r.doc,
               m,
-              (B) => l.includes(B.type.name)
-            ), y = b.map(({ node: B }) => B.attrs[d]).filter((B) => B !== null), U = be(y);
-            b.forEach(({ node: B, pos: O }) => {
-              var $;
-              const Z = ($ = s.doc.nodeAt(O)) === null || $ === void 0 ? void 0 : $.attrs[d];
-              if (Z === null) {
-                s.setNodeMarkup(O, void 0, {
-                  ...B.attrs,
+              (S) => l.includes(S.type.name)
+            ), b = g.map(({ node: S }) => S.attrs[d]).filter((S) => S !== null), C = Ie(b);
+            g.forEach(({ node: S, pos: R }) => {
+              let $;
+              const Q = ($ = a.doc.nodeAt(R)) === null || $ === void 0 ? void 0 : $.attrs[d];
+              if (Q === null) {
+                a.setNodeMarkup(R, void 0, {
+                  ...S.attrs,
                   [d]: c()
                 });
                 return;
               }
-              const { deleted: At } = p.invert().mapResult(O);
-              At && U.includes(Z) && s.setNodeMarkup(O, void 0, {
-                ...B.attrs,
+              const { deleted: Lt } = p.invert().mapResult(R);
+              Lt && C.includes(Q) && a.setNodeMarkup(R, void 0, {
+                ...S.attrs,
                 [d]: c()
               });
             });
-          }), !!s.steps.length)
-            return s;
+          }), !!a.steps.length)
+            return a;
         },
         // we register a global drag handler to track the current drag source element
         view(t) {
-          const n = (r) => {
-            var i;
-            o = !((i = t.dom.parentElement) === null || i === void 0) && i.contains(r.target) ? t.dom.parentElement : null;
+          const o = (r) => {
+            let i;
+            n = !((i = t.dom.parentElement) === null || i === void 0) && i.contains(r.target) ? t.dom.parentElement : null;
           };
-          return window.addEventListener("dragstart", n), {
+          return window.addEventListener("dragstart", o), {
             destroy() {
-              window.removeEventListener("dragstart", n);
+              window.removeEventListener("dragstart", o);
             }
           };
         },
@@ -583,9 +776,9 @@ const K = v.create({
           handleDOMEvents: {
             // only create new ids for dropped content while holding `alt`
             // or content is dragged from another editor
-            drop: (t, n) => {
-              var r;
-              return (o !== t.dom.parentElement || ((r = n.dataTransfer) === null || r === void 0 ? void 0 : r.effectAllowed) === "copy") && (o = null, e = !0), !1;
+            drop: (t, o) => {
+              let r;
+              return (n !== t.dom.parentElement || ((r = o.dataTransfer) === null || r === void 0 ? void 0 : r.effectAllowed) === "copy") && (n = null, e = !0), !1;
             },
             // always create new ids on pasted content
             paste: () => (e = !0, !1)
@@ -595,15 +788,15 @@ const K = v.create({
           transformPasted: (t) => {
             if (!e)
               return t;
-            const { types: n, attributeName: r } = this.options, i = (a) => {
-              const s = [];
-              return a.forEach((l) => {
+            const { types: o, attributeName: r } = this.options, i = (s) => {
+              const a = [];
+              return s.forEach((l) => {
                 if (l.isText) {
-                  s.push(l);
+                  a.push(l);
                   return;
                 }
-                if (!n.includes(l.type.name)) {
-                  s.push(l.copy(i(l.content)));
+                if (!o.includes(l.type.name)) {
+                  a.push(l.copy(i(l.content)));
                   return;
                 }
                 const d = l.type.create(
@@ -614,10 +807,10 @@ const K = v.create({
                   i(l.content),
                   l.marks
                 );
-                s.push(d);
-              }), P.from(s);
+                a.push(d);
+              }), _.from(a);
             };
-            return e = !1, new T(
+            return e = !1, new x(
               i(t.content),
               t.openStart,
               t.openEnd
@@ -627,94 +820,88 @@ const K = v.create({
       })
     ];
   }
-});
-class ve extends Error {
-  constructor(e) {
-    super(`Unreachable case: ${e}`);
-  }
-}
-const Ct = /* @__PURE__ */ new Set([
+}), St = /* @__PURE__ */ new Set([
   "bold",
   "italic",
   "underline",
   "strike",
   "code"
-]), Bt = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
-function nt(o, e) {
+]), Et = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
+function it(n, e) {
   const t = [];
-  for (const [n, r] of Object.entries(o.styles))
-    Ct.has(n) ? t.push(e.mark(n)) : Bt.has(n) && t.push(e.mark(n, { color: r }));
-  return o.text.split(/(\n)/g).filter((n) => n.length > 0).map((n) => n === `
-` ? e.nodes.hardBreak.create() : e.text(n, t));
+  for (const [o, r] of Object.entries(n.styles))
+    St.has(o) ? t.push(e.mark(o)) : Et.has(o) && t.push(e.mark(o, { color: r }));
+  return n.text.split(/(\n)/g).filter((o) => o.length > 0).map((o) => o === `
+` ? e.nodes.hardBreak.create() : e.text(o, t));
 }
-function Ee(o, e) {
+function _e(n, e) {
   const t = e.marks.link.create({
-    href: o.href
+    href: n.href
   });
-  return Mt(o.content, e).map((n) => {
-    if (n.type.name === "text")
-      return n.mark([...n.marks, t]);
-    if (n.type.name === "hardBreak")
-      return n;
+  return Bt(n.content, e).map((o) => {
+    if (o.type.name === "text")
+      return o.mark([...o.marks, t]);
+    if (o.type.name === "hardBreak")
+      return o;
     throw new Error("unexpected node type");
   });
 }
-function Mt(o, e) {
-  let t = [];
-  if (typeof o == "string")
+function Bt(n, e) {
+  const t = [];
+  if (typeof n == "string")
     return t.push(
-      ...nt({ type: "text", text: o, styles: {} }, e)
+      ...it({ type: "text", text: n, styles: {} }, e)
     ), t;
-  for (const n of o)
-    t.push(...nt(n, e));
+  for (const o of n)
+    t.push(...it(o, e));
   return t;
 }
-function wt(o, e) {
-  let t = [];
-  for (const n of o)
-    if (n.type === "link")
-      t.push(...Ee(n, e));
-    else if (n.type === "text")
-      t.push(...Mt([n], e));
+function Tt(n, e) {
+  const t = [];
+  for (const o of n)
+    if (o.type === "link")
+      t.push(..._e(o, e));
+    else if (o.type === "text")
+      t.push(...Bt([o], e));
     else
-      throw new ve(n);
+      throw new ye(o);
   return t;
 }
-function z(o, e) {
-  let t = o.id;
-  t === void 0 && (t = K.options.generateID());
-  let n = o.type;
-  n === void 0 && (n = "paragraph");
+function D(n, e) {
+  let t = n.id;
+  t === void 0 && (t = F.options.generateID());
+  let o = n.type;
+  o === void 0 && (o = "paragraph");
   let r;
-  if (!o.content)
-    r = e.nodes[n].create(o.props);
-  else if (typeof o.content == "string")
-    r = e.nodes[n].create(
-      o.props,
-      e.text(o.content)
+  if (!n.content)
+    r = e.nodes[o].create(n.props);
+  else if (typeof n.content == "string")
+    r = e.nodes[o].create(
+      n.props,
+      e.text(n.content)
     );
   else {
-    const s = wt(o.content, e);
-    r = e.nodes[n].create(o.props, s);
+    const a = Tt(n.content, e);
+    r = e.nodes[o].create(n.props, a);
   }
   const i = [];
-  if (o.children)
-    for (const s of o.children)
-      i.push(z(s, e));
-  const a = e.nodes.blockGroup.create({}, i);
+  if (n.children)
+    for (const a of n.children)
+      i.push(D(a, e));
+  const s = e.nodes.blockGroup.create({}, i);
   return e.nodes.blockContainer.create(
     {
       id: t,
-      ...o.props
+      ...n.props
     },
-    i.length > 0 ? [r, a] : r
+    i.length > 0 ? [r, s] : r
   );
 }
-function Ce(o) {
+function He(n) {
   const e = [];
   let t;
-  return o.content.forEach((n) => {
-    if (n.type.name === "hardBreak") {
+  return n.content.forEach((o) => {
+    if (o.type.name === "hardBreak") {
       t ? t.type === "text" ? t.text += `
 ` : t.type === "link" && (t.content[t.content.length - 1].text += `
 `) : t = {
@@ -726,37 +913,37 @@ function Ce(o) {
       return;
     }
     const r = {};
-    let i, a;
-    for (const s of n.marks)
-      if (s.type.name === "link")
-        i = s;
-      else if (s.type.name === "comment")
-        a = s;
-      else if (Ct.has(s.type.name))
-        r[s.type.name] = !0;
-      else if (Bt.has(s.type.name))
-        r[s.type.name] = s.attrs.color;
+    let i, s;
+    for (const a of o.marks)
+      if (a.type.name === "link")
+        i = a;
+      else if (a.type.name === "comment")
+        s = a;
+      else if (St.has(a.type.name))
+        r[a.type.name] = !0;
+      else if (Et.has(a.type.name))
+        r[a.type.name] = a.attrs.color;
       else
-        throw Error("Mark is of an unrecognized type: " + s.type.name);
+        throw Error("Mark is of an unrecognized type: " + a.type.name);
     t ? t.type === "text" ? i ? (e.push(t), t = {
       type: "link",
       href: i.attrs.href,
       content: [
         {
           type: "text",
-          text: n.textContent,
+          text: o.textContent,
           styles: r
         }
       ]
-    }) : a ? e.push(t) : JSON.stringify(t.styles) === JSON.stringify(r) ? t.text += n.textContent : (e.push(t), t = {
+    }) : s ? e.push(t) : JSON.stringify(t.styles) === JSON.stringify(r) ? t.text += o.textContent : (e.push(t), t = {
       type: "text",
-      text: n.textContent,
+      text: o.textContent,
       styles: r
     }) : t.type === "link" && (i ? t.href === i.attrs.href ? JSON.stringify(
       t.content[t.content.length - 1].styles
-    ) === JSON.stringify(r) ? t.content[t.content.length - 1].text += n.textContent : t.content.push({
+    ) === JSON.stringify(r) ? t.content[t.content.length - 1].text += o.textContent : t.content.push({
       type: "text",
-      text: n.textContent,
+      text: o.textContent,
       styles: r
     }) : (e.push(t), t = {
       type: "link",
@@ -764,13 +951,13 @@ function Ce(o) {
       content: [
         {
           type: "text",
-          text: n.textContent,
+          text: o.textContent,
           styles: r
         }
       ]
     }) : (e.push(t), t = {
       type: "text",
-      text: n.textContent,
+      text: o.textContent,
       styles: r
     })) : i ? t = {
       type: "link",
@@ -778,31 +965,31 @@ function Ce(o) {
       content: [
         {
           type: "text",
-          text: n.textContent,
+          text: o.textContent,
           styles: r
         }
       ]
     } : t = {
       type: "text",
-      text: n.textContent,
+      text: o.textContent,
       styles: r
     };
   }), t && e.push(t), e;
 }
-function M(o, e, t) {
-  if (o.type.name !== "blockContainer")
+function E(n, e, t) {
+  if (n.type.name !== "blockContainer")
     throw Error(
-      "Node must be of type blockContainer, but is of type" + o.type.name + "."
+      "Node must be of type blockContainer, but is of type" + n.type.name + "."
     );
-  const n = t == null ? void 0 : t.get(o);
-  if (n)
-    return n;
-  const r = g(o, 0);
+  const o = t == null ? void 0 : t.get(n);
+  if (o)
+    return o;
+  const r = pt(n);
   let i = r.id;
-  i === null && (i = K.options.generateID());
-  const a = {};
-  for (const [c, u] of Object.entries({
-    ...r.node.attrs,
+  i === null && (i = F.options.generateID());
+  const s = {};
+  for (const [c, h] of Object.entries({
+    ...n.attrs,
     ...r.contentNode.attrs
   })) {
     const p = e[r.contentType.name];
@@ -811,238 +998,23 @@ function M(o, e, t) {
         "Block is of an unrecognized type: " + r.contentType.name
       );
     const f = p.propSchema;
-    c in f ? a[c] = u : c !== "id" && !(c in L) && console.warn("Block has an unrecognized attribute: " + c);
+    c in f ? s[c] = h : c !== "id" && !(c in P) && console.warn("Block has an unrecognized attribute: " + c);
   }
-  const s = Ce(r.contentNode), l = [];
+  const a = He(r.contentNode), l = [];
   for (let c = 0; c < r.numChildBlocks; c++)
     l.push(
-      M(r.node.lastChild.child(c), e, t)
+      E(n.lastChild.child(c), e, t)
     );
   const d = {
     id: i,
     type: r.contentType.name,
-    props: a,
-    content: s,
+    props: s,
+    content: a,
     children: l
   };
-  return t == null || t.set(o, d), d;
+  return t == null || t.set(n, d), d;
 }
-function J(o, e) {
-  let t, n;
-  if (e.firstChild.descendants((r, i) => t ? !1 : r.type.name !== "blockContainer" || r.attrs.id !== o ? !0 : (t = r, n = i + 1, !1)), t === void 0 || n === void 0)
-    throw Error("Could not find block in the editor with matching ID.");
-  return {
-    node: t,
-    posBeforeNode: n
-  };
-}
-function Tt(o, e, t = "before", n) {
-  const r = typeof e == "string" ? e : e.id, i = [];
-  for (const d of o)
-    i.push(z(d, n.schema));
-  let a = -1;
-  const { node: s, posBeforeNode: l } = J(r, n.state.doc);
-  if (t === "before" && (a = l), t === "after" && (a = l + s.nodeSize), t === "nested") {
-    if (s.childCount < 2) {
-      a = l + s.firstChild.nodeSize + 1;
-      const d = n.state.schema.nodes.blockGroup.create(
-        {},
-        i
-      );
-      n.view.dispatch(
-        n.state.tr.insert(a, d)
-      );
-      return;
-    }
-    a = l + s.firstChild.nodeSize + 2;
-  }
-  n.view.dispatch(n.state.tr.insert(a, i));
-}
-function Be(o, e, t) {
-  const n = typeof o == "string" ? o : o.id, { posBeforeNode: r } = J(n, t.state.doc);
-  t.commands.BNUpdateBlock(r + 1, e);
-}
-function xt(o, e) {
-  const t = new Set(
-    o.map(
-      (r) => typeof r == "string" ? r : r.id
-    )
-  );
-  let n = 0;
-  if (e.state.doc.descendants((r, i) => {
-    if (t.size === 0)
-      return !1;
-    if (r.type.name !== "blockContainer" || !t.has(r.attrs.id))
-      return !0;
-    t.delete(r.attrs.id);
-    const a = e.state.doc.nodeSize;
-    e.commands.BNDeleteBlock(i - n + 1);
-    const s = e.state.doc.nodeSize;
-    return n += a - s, !1;
-  }), t.size > 0) {
-    let r = [...t].join(`
-`);
-    throw Error(
-      "Blocks with the following IDs could not be found in the editor: " + r
-    );
-  }
-}
-function Me(o, e, t) {
-  Tt(e, o[0], "before", t), xt(o, t);
-}
-function we() {
-  const o = (e) => {
-    let t = e.children.length;
-    for (let n = 0; n < t; n++) {
-      const r = e.children[n];
-      if (r.type === "element" && (o(r), r.tagName === "u"))
-        if (r.children.length > 0) {
-          e.children.splice(n, 1, ...r.children);
-          const i = r.children.length - 1;
-          t += i, n += i;
-        } else
-          e.children.splice(n, 1), t--, n--;
-    }
-  };
-  return o;
-}
-function Te(o) {
-  const e = /* @__PURE__ */ new Set([
-    ...o.orderedListItemBlockTypes,
-    ...o.unorderedListItemBlockTypes
-  ]), t = (n) => {
-    let r = n.children.length, i;
-    for (let a = 0; a < r; a++) {
-      const l = n.children[a].children[0], d = l.children[0], c = l.children.length === 2 ? l.children[1] : null, u = e.has(
-        d.properties.dataContentType
-      ), p = u ? o.orderedListItemBlockTypes.has(
-        d.properties.dataContentType
-      ) ? "ol" : "ul" : null;
-      if (c !== null && t(c), i && i.tagName !== p) {
-        n.children.splice(
-          a - i.children.length,
-          i.children.length,
-          i
-        );
-        const f = i.children.length - 1;
-        a -= f, r -= f, i = void 0;
-      }
-      if (u) {
-        i || (i = et(
-          document.createElement(p)
-        ));
-        const f = et(
-          document.createElement("li")
-        );
-        f.children.push(d.children[0]), c !== null && f.children.push(...c.children), i.children.push(f);
-      } else if (c !== null) {
-        n.children.splice(a + 1, 0, ...c.children), n.children[a] = d.children[0];
-        const f = c.children.length;
-        a += f, r += f;
-      } else
-        n.children[a] = d.children[0];
-    }
-    i && n.children.splice(
-      r - i.children.length,
-      i.children.length,
-      i
-    );
-  };
-  return t;
-}
-async function St(o, e) {
-  const t = document.createElement("div"), n = q.fromSchema(e);
-  for (const i of o) {
-    const a = z(i, e), s = n.serializeNode(a);
-    t.appendChild(s);
-  }
-  return (await Y().use(lt, { fragment: !0 }).use(Te, {
-    orderedListItemBlockTypes: /* @__PURE__ */ new Set(["numberedListItem"]),
-    unorderedListItemBlockTypes: /* @__PURE__ */ new Set(["bulletListItem"])
-  }).use(dt).process(t.innerHTML)).value;
-}
-async function It(o, e, t) {
-  const n = document.createElement("div");
-  n.innerHTML = o.trim();
-  const i = Gt.fromSchema(t).parse(n), a = [];
-  for (let s = 0; s < i.firstChild.childCount; s++)
-    a.push(M(i.firstChild.child(s), e));
-  return a;
-}
-async function xe(o, e) {
-  return (await Y().use(lt, { fragment: !0 }).use(we).use(qt).use(ct).use(Yt).process(await St(o, e))).value;
-}
-async function Se(o, e, t) {
-  const n = await Y().use(Wt).use(ct).use(Vt).use(dt).process(o);
-  return It(n.value, e, t);
-}
-const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4vj2p_35", Ae = "_dragPreview_4vj2p_68", _ = {
-  bnEditor: Ie,
-  bnRoot: Pe,
-  defaultStyles: _e,
-  dragPreview: Ae,
-  "collaboration-cursor__caret": "_collaboration-cursor__caret_4vj2p_74",
-  "collaboration-cursor__label": "_collaboration-cursor__label_4vj2p_85"
-}, Ne = v.create({
-  name: "blockBackgroundColor",
-  addGlobalAttributes() {
-    return [
-      {
-        types: ["blockContainer"],
-        attributes: {
-          backgroundColor: {
-            default: "default",
-            parseHTML: (o) => o.hasAttribute("data-background-color") ? o.getAttribute("data-background-color") : "default",
-            renderHTML: (o) => o.backgroundColor !== "default" && {
-              "data-background-color": o.backgroundColor
-            }
-          }
-        }
-      }
-    ];
-  },
-  addCommands() {
-    return {
-      setBlockBackgroundColor: (o, e) => ({ state: t, view: n }) => {
-        const r = g(t.doc, o);
-        return r === void 0 ? !1 : (t.tr.setNodeAttribute(
-          r.startPos - 1,
-          "backgroundColor",
-          e
-        ), n.focus(), !0);
-      }
-    };
-  }
-}), Le = st.create({
-  name: "backgroundColor",
-  addAttributes() {
-    return {
-      color: {
-        default: void 0,
-        parseHTML: (o) => o.getAttribute("data-background-color"),
-        renderHTML: (o) => ({
-          "data-background-color": o.color
-        })
-      }
-    };
-  },
-  parseHTML() {
-    return [
-      {
-        tag: "span",
-        getAttrs: (o) => typeof o == "string" ? !1 : o.hasAttribute("data-background-color") ? { color: o.getAttribute("data-background-color") } : !1
-      }
-    ];
-  },
-  renderHTML({ HTMLAttributes: o }) {
-    return ["span", o, 0];
-  },
-  addCommands() {
-    return {
-      setBackgroundColor: (o) => ({ commands: e }) => o !== "default" ? e.setMark(this.name, { color: o }) : e.unsetMark(this.name)
-    };
-  }
-}), rt = new E("previous-blocks"), He = {
+const st = new M("previous-blocks"), Ne = {
   // Numbered List Items
   index: "index",
   // Headings
@@ -1051,22 +1023,22 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
   type: "type",
   depth: "depth",
   "depth-change": "depth-change"
-}, Oe = () => {
-  let o;
-  return new C({
-    key: rt,
+}, Le = () => {
+  let n;
+  return new w({
+    key: st,
     view(e) {
       return {
-        update: async (t, n) => {
+        update: async (t, o) => {
           var r;
-          ((r = this.key) == null ? void 0 : r.getState(t.state).updatedBlocks.size) > 0 && (o = setTimeout(() => {
+          ((r = this.key) == null ? void 0 : r.getState(t.state).updatedBlocks.size) > 0 && (n = setTimeout(() => {
             t.dispatch(
-              t.state.tr.setMeta(rt, { clearUpdate: !0 })
+              t.state.tr.setMeta(st, { clearUpdate: !0 })
             );
           }, 0));
         },
         destroy: () => {
-          o && clearTimeout(o);
+          n && clearTimeout(n);
         }
       };
     },
@@ -1081,15 +1053,15 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
           updatedBlocks: /* @__PURE__ */ new Set()
         };
       },
-      apply(e, t, n, r) {
-        if (t.currentTransactionOldBlockAttrs = {}, t.updatedBlocks.clear(), !e.docChanged || n.doc.eq(r.doc))
+      apply(e, t, o, r) {
+        if (t.currentTransactionOldBlockAttrs = {}, t.updatedBlocks.clear(), !e.docChanged || o.doc.eq(r.doc))
           return t;
-        const i = {}, a = j(n.doc, (d) => d.attrs.id), s = new Map(
-          a.map((d) => [d.node.attrs.id, d])
-        ), l = j(r.doc, (d) => d.attrs.id);
-        for (let d of l) {
-          const c = s.get(d.node.attrs.id), u = c == null ? void 0 : c.node.firstChild, p = d.node.firstChild;
-          if (c && u && p) {
+        const i = {}, s = tt(o.doc, (d) => d.attrs.id), a = new Map(
+          s.map((d) => [d.node.attrs.id, d])
+        ), l = tt(r.doc, (d) => d.attrs.id);
+        for (const d of l) {
+          const c = a.get(d.node.attrs.id), h = c == null ? void 0 : c.node.firstChild, p = d.node.firstChild;
+          if (c && h && p) {
             const f = {
               index: p.attrs.index,
               level: p.attrs.level,
@@ -1097,10 +1069,10 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
               depth: r.doc.resolve(d.pos).depth
             };
             let m = {
-              index: u.attrs.index,
-              level: u.attrs.level,
-              type: u.type.name,
-              depth: n.doc.resolve(c.pos).depth
+              index: h.attrs.index,
+              level: h.attrs.level,
+              type: h.type.name,
+              depth: o.doc.resolve(c.pos).depth
             };
             i[d.node.attrs.id] = m, e.getMeta("numberedListIndexing") && (d.node.attrs.id in t.prevTransactionOldBlockAttrs && (m = t.prevTransactionOldBlockAttrs[d.node.attrs.id]), f.type === "numberedListItem" && (m.index = f.index)), t.currentTransactionOldBlockAttrs[d.node.attrs.id] = m, JSON.stringify(m) !== JSON.stringify(f) && (m["depth-change"] = m.depth - f.depth, t.updatedBlocks.add(d.node.attrs.id));
           }
@@ -1113,28 +1085,28 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
         const t = this.getState(e);
         if (t.updatedBlocks.size === 0)
           return;
-        const n = [];
+        const o = [];
         return e.doc.descendants((r, i) => {
           if (!r.attrs.id || !t.updatedBlocks.has(r.attrs.id))
             return;
-          const a = t.currentTransactionOldBlockAttrs[r.attrs.id], s = {};
-          for (let [d, c] of Object.entries(a))
-            s["data-prev-" + He[d]] = c || "none";
-          const l = D.node(i, i + r.nodeSize, {
-            ...s
+          const s = t.currentTransactionOldBlockAttrs[r.attrs.id], a = {};
+          for (const [d, c] of Object.entries(s))
+            a["data-prev-" + Ne[d]] = c || "none";
+          const l = V.node(i, i + r.nodeSize, {
+            ...a
           });
-          n.push(l);
-        }), F.create(e.doc, n);
+          o.push(l);
+        }), z.create(e.doc, o);
       }
     }
   });
-}, De = {
+}, Pe = {
   blockColor: "data-block-color",
   blockStyle: "data-block-style",
   id: "data-id",
   depth: "data-depth",
   depthChange: "data-depth-change"
-}, Fe = R.create({
+}, Oe = U.create({
   name: "blockContainer",
   group: "blockContainer",
   // A block always contains content, and optionally a blockGroup which contains nested blocks
@@ -1142,40 +1114,40 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
   // Ensures content-specific keyboard handlers trigger first.
   priority: 50,
   defining: !0,
-  addOptions() {
-    return {
-      HTMLAttributes: {}
-    };
-  },
   parseHTML() {
     return [
       {
         tag: "div",
-        getAttrs: (o) => {
-          if (typeof o == "string")
+        getAttrs: (n) => {
+          if (typeof n == "string")
             return !1;
           const e = {};
-          for (let [t, n] of Object.entries(De))
-            o.getAttribute(n) && (e[t] = o.getAttribute(n));
-          return o.getAttribute("data-node-type") === "blockContainer" ? e : !1;
+          for (const [t, o] of Object.entries(Pe))
+            n.getAttribute(o) && (e[t] = n.getAttribute(o));
+          return n.getAttribute("data-node-type") === "blockContainer" ? e : !1;
         }
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
+  renderHTML({ HTMLAttributes: n }) {
+    var t;
+    const e = ((t = this.options.domAttributes) == null ? void 0 : t.blockContainer) || {};
     return [
       "div",
-      x(o, {
-        class: k.blockOuter,
+      A(n, {
+        class: y.blockOuter,
         "data-node-type": "block-outer"
       }),
       [
         "div",
-        x(o, {
-          // TODO: maybe remove html attributes from inner block
-          class: k.block,
-          "data-node-type": this.name
-        }),
+        A(
+          {
+            ...e,
+            class: v(y.block, e.class),
+            "data-node-type": this.name
+          },
+          n
+        ),
         0
       ]
     ];
@@ -1183,33 +1155,33 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
   addCommands() {
     return {
       // Creates a new text block at a given position.
-      BNCreateBlock: (o) => ({ state: e, dispatch: t }) => {
-        const n = e.schema.nodes.blockContainer.createAndFill();
-        return t && e.tr.insert(o, n), !0;
+      BNCreateBlock: (n) => ({ state: e, dispatch: t }) => {
+        const o = e.schema.nodes.blockContainer.createAndFill();
+        return t && e.tr.insert(n, o), !0;
       },
       // Deletes a block at a given position.
-      BNDeleteBlock: (o) => ({ state: e, dispatch: t }) => {
-        const n = g(e.doc, o);
-        if (n === void 0)
+      BNDeleteBlock: (n) => ({ state: e, dispatch: t }) => {
+        const o = k(e.doc, n);
+        if (o === void 0)
           return !1;
-        const { startPos: r, endPos: i } = n;
+        const { startPos: r, endPos: i } = o;
         return t && e.tr.deleteRange(r, i), !0;
       },
       // Updates a block at a given position.
-      BNUpdateBlock: (o, e) => ({ state: t, dispatch: n }) => {
-        const r = g(t.doc, o);
+      BNUpdateBlock: (n, e) => ({ state: t, dispatch: o }) => {
+        const r = k(t.doc, n);
         if (r === void 0)
           return !1;
-        const { startPos: i, endPos: a, node: s, contentNode: l } = r;
-        if (n) {
+        const { startPos: i, endPos: s, node: a, contentNode: l } = r;
+        if (o) {
           if (e.children !== void 0) {
             const d = [];
             for (const c of e.children)
-              d.push(z(c, t.schema));
-            s.childCount === 2 ? t.tr.replace(
+              d.push(D(c, t.schema));
+            a.childCount === 2 ? t.tr.replace(
               i + l.nodeSize + 1,
-              a - 1,
-              new T(P.from(d), 0, 0)
+              s - 1,
+              new x(_.from(d), 0, 0)
             ) : t.tr.insert(
               i + l.nodeSize,
               t.schema.nodes.blockGroup.create({}, d)
@@ -1217,10 +1189,10 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
           }
           if (e.content !== void 0) {
             let d = [];
-            typeof e.content == "string" ? d.push(t.schema.text(e.content)) : d = wt(e.content, t.schema), t.tr.replace(
+            typeof e.content == "string" ? d.push(t.schema.text(e.content)) : d = Tt(e.content, t.schema), t.tr.replace(
               i + 1,
               i + l.nodeSize - 1,
-              new T(P.from(d), 0, 0)
+              new x(_.from(d), 0, 0)
             );
           }
           t.tr.setNodeMarkup(
@@ -1231,7 +1203,7 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
               ...e.props
             }
           ), t.tr.setNodeMarkup(i - 1, void 0, {
-            ...s.attrs,
+            ...a.attrs,
             ...e.props
           });
         }
@@ -1254,61 +1226,61 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
       //    Block2Block3
       // Block4
       //     Block5
-      BNMergeBlocks: (o) => ({ state: e, dispatch: t }) => {
-        const n = e.doc.resolve(o + 1).node().type.name === "blockContainer", r = e.doc.resolve(o - 1).node().type.name === "blockContainer";
-        if (!n || !r)
+      BNMergeBlocks: (n) => ({ state: e, dispatch: t }) => {
+        const o = e.doc.resolve(n + 1).node().type.name === "blockContainer", r = e.doc.resolve(n - 1).node().type.name === "blockContainer";
+        if (!o || !r)
           return !1;
-        const i = g(
+        const i = k(
           e.doc,
-          o + 1
-        ), { node: a, contentNode: s, startPos: l, endPos: d, depth: c } = i;
-        if (a.childCount === 2) {
+          n + 1
+        ), { node: s, contentNode: a, startPos: l, endPos: d, depth: c } = i;
+        if (s.childCount === 2) {
           const f = e.doc.resolve(
-            l + s.nodeSize + 1
-          ), m = e.doc.resolve(d - 1), b = f.blockRange(m);
-          t && e.tr.lift(b, c - 1);
+            l + a.nodeSize + 1
+          ), m = e.doc.resolve(d - 1), g = f.blockRange(m);
+          t && e.tr.lift(g, c - 1);
         }
-        let u = o - 1, p = g(e.doc, u);
+        let h = n - 1, p = k(e.doc, h);
         for (; p.numChildBlocks > 0; )
-          if (u--, p = g(e.doc, u), p === void 0)
+          if (h--, p = k(e.doc, h), p === void 0)
             return !1;
         return t && (t(
-          e.tr.deleteRange(l, l + s.nodeSize).replace(
-            u - 1,
+          e.tr.deleteRange(l, l + a.nodeSize).replace(
+            h - 1,
             l,
-            new T(s.content, 0, 0)
+            new x(a.content, 0, 0)
           ).scrollIntoView()
         ), e.tr.setSelection(
-          new tt(e.doc.resolve(u - 1))
+          new ot(e.doc.resolve(h - 1))
         )), !0;
       },
       // Splits a block at a given position. Content after the position is moved to a new block below, at the same
       // nesting level.
-      BNSplitBlock: (o, e) => ({ state: t, dispatch: n }) => {
-        const r = g(t.doc, o);
+      BNSplitBlock: (n, e) => ({ state: t, dispatch: o }) => {
+        const r = k(t.doc, n);
         if (r === void 0)
           return !1;
-        const { contentNode: i, contentType: a, startPos: s, endPos: l, depth: d } = r, c = t.doc.cut(s + 1, o), u = t.doc.cut(o, l - 1), p = t.schema.nodes.blockContainer.createAndFill(), f = l + 1, m = f + 2;
-        return n && (t.tr.insert(f, p), t.tr.replace(
+        const { contentNode: i, contentType: s, startPos: a, endPos: l, depth: d } = r, c = t.doc.cut(a + 1, n), h = t.doc.cut(n, l - 1), p = t.schema.nodes.blockContainer.createAndFill(), f = l + 1, m = f + 2;
+        return o && (t.tr.insert(f, p), t.tr.replace(
           m,
           m + 1,
-          u.content.size > 0 ? new T(
-            P.from(u),
+          h.content.size > 0 ? new x(
+            _.from(h),
             d + 2,
             d + 2
           ) : void 0
         ), e && t.tr.setBlockType(
           m,
           m,
-          t.schema.node(a).type,
+          t.schema.node(s).type,
           i.attrs
         ), t.tr.setSelection(
-          new tt(t.doc.resolve(m))
+          new ot(t.doc.resolve(m))
         ), t.tr.replace(
-          s + 1,
+          a + 1,
           l - 1,
-          c.content.size > 0 ? new T(
-            P.from(c),
+          c.content.size > 0 ? new x(
+            _.from(c),
             d + 2,
             d + 2
           ) : void 0
@@ -1317,7 +1289,7 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
     };
   },
   addProseMirrorPlugins() {
-    return [Oe()];
+    return [Le()];
   },
   addKeyboardShortcuts() {
     return {
@@ -1327,59 +1299,59 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
         // Undoes an input rule if one was triggered in the last editor state change.
         () => t.undoInputRule(),
         // Reverts block content type to a paragraph if the selection is at the start of the block.
-        () => t.command(({ state: n }) => {
-          const { contentType: r } = g(
-            n.doc,
-            n.selection.from
-          ), i = n.selection.$anchor.parentOffset === 0, a = r.name === "paragraph";
-          return i && !a ? t.BNUpdateBlock(n.selection.from, {
+        () => t.command(({ state: o }) => {
+          const { contentType: r } = k(
+            o.doc,
+            o.selection.from
+          ), i = o.selection.$anchor.parentOffset === 0, s = r.name === "paragraph";
+          return i && !s ? t.BNUpdateBlock(o.selection.from, {
             type: "paragraph",
             props: {}
           }) : !1;
         }),
         // Removes a level of nesting if the block is indented if the selection is at the start of the block.
-        () => t.command(({ state: n }) => n.selection.$anchor.parentOffset === 0 ? t.liftListItem("blockContainer") : !1),
+        () => t.command(({ state: o }) => o.selection.$anchor.parentOffset === 0 ? t.liftListItem("blockContainer") : !1),
         // Merges block with the previous one if it isn't indented, isn't the first block in the doc, and the selection
         // is at the start of the block.
-        () => t.command(({ state: n }) => {
-          const { depth: r, startPos: i } = g(
-            n.doc,
-            n.selection.from
-          ), a = n.selection.$anchor.parentOffset === 0, s = n.selection.anchor === n.selection.head, l = i === 2, d = i - 1;
-          return !l && a && s && r === 2 ? t.BNMergeBlocks(d) : !1;
+        () => t.command(({ state: o }) => {
+          const { depth: r, startPos: i } = k(
+            o.doc,
+            o.selection.from
+          ), s = o.selection.$anchor.parentOffset === 0, a = o.selection.anchor === o.selection.head, l = i === 2, d = i - 1;
+          return !l && s && a && r === 2 ? t.BNMergeBlocks(d) : !1;
         })
       ]),
       Enter: () => this.editor.commands.first(({ commands: t }) => [
         // Removes a level of nesting if the block is empty & indented, while the selection is also empty & at the start
         // of the block.
-        () => t.command(({ state: n }) => {
-          const { node: r, depth: i } = g(
-            n.doc,
-            n.selection.from
-          ), a = n.selection.$anchor.parentOffset === 0, s = n.selection.anchor === n.selection.head, l = r.textContent.length === 0, d = i > 2;
-          return a && s && l && d ? t.liftListItem("blockContainer") : !1;
+        () => t.command(({ state: o }) => {
+          const { node: r, depth: i } = k(
+            o.doc,
+            o.selection.from
+          ), s = o.selection.$anchor.parentOffset === 0, a = o.selection.anchor === o.selection.head, l = r.textContent.length === 0, d = i > 2;
+          return s && a && l && d ? t.liftListItem("blockContainer") : !1;
         }),
         // Creates a new block and moves the selection to it if the current one is empty, while the selection is also
         // empty & at the start of the block.
-        () => t.command(({ state: n, chain: r }) => {
-          const { node: i, endPos: a } = g(
-            n.doc,
-            n.selection.from
-          ), s = n.selection.$anchor.parentOffset === 0, l = n.selection.anchor === n.selection.head, d = i.textContent.length === 0;
-          if (s && l && d) {
-            const c = a + 1, u = c + 2;
-            return r().BNCreateBlock(c).setTextSelection(u).run(), !0;
+        () => t.command(({ state: o, chain: r }) => {
+          const { node: i, endPos: s } = k(
+            o.doc,
+            o.selection.from
+          ), a = o.selection.$anchor.parentOffset === 0, l = o.selection.anchor === o.selection.head, d = i.textContent.length === 0;
+          if (a && l && d) {
+            const c = s + 1, h = c + 2;
+            return r().BNCreateBlock(c).setTextSelection(h).run(), !0;
           }
           return !1;
         }),
         // Splits the current block, moving content inside that's after the cursor to a new text block below. Also
         // deletes the selection beforehand, if it's not empty.
-        () => t.command(({ state: n, chain: r }) => {
-          const { node: i } = g(
-            n.doc,
-            n.selection.from
+        () => t.command(({ state: o, chain: r }) => {
+          const { node: i } = k(
+            o.doc,
+            o.selection.from
           );
-          return i.textContent.length === 0 ? !1 : (r().deleteSelection().BNSplitBlock(n.selection.from, !1).run(), !0);
+          return i.textContent.length === 0 ? !1 : (r().deleteSelection().BNSplitBlock(o.selection.from, !1).run(), !0);
         })
       ]),
       // Always returning true for tab key presses ensures they're not captured by the browser. Otherwise, they blur the
@@ -1417,44 +1389,44 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
       })
     };
   }
-}), Re = R.create({
+}), De = U.create({
   name: "blockGroup",
   group: "blockGroup",
   content: "blockContainer+",
-  addOptions() {
-    return {
-      HTMLAttributes: {}
-    };
-  },
   parseHTML() {
     return [
       {
         tag: "div",
-        getAttrs: (o) => typeof o == "string" ? !1 : o.getAttribute("data-node-type") === "blockGroup" ? null : !1
+        getAttrs: (n) => typeof n == "string" ? !1 : n.getAttribute("data-node-type") === "blockGroup" ? null : !1
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
+  renderHTML({ HTMLAttributes: n }) {
+    var t;
+    const e = ((t = this.options.domAttributes) == null ? void 0 : t.blockGroup) || {};
     return [
       "div",
-      x(this.options.HTMLAttributes, o, {
-        class: k.blockGroup,
-        "data-node-type": "blockGroup"
-      }),
+      A(
+        {
+          ...e,
+          class: v(
+            y.blockGroup,
+            e.class
+          ),
+          "data-node-type": "blockGroup"
+        },
+        n
+      ),
       0
     ];
   }
-}), ze = [
-  Fe,
-  Re,
-  R.create({
-    name: "doc",
-    topNode: !0,
-    content: "blockGroup"
-  })
-], Ue = (o) => {
-  const e = q.fromSchema(o);
-  return new q(
+}), Re = U.create({
+  name: "doc",
+  topNode: !0,
+  content: "blockGroup"
+}), Ve = (n) => {
+  const e = W.fromSchema(n);
+  return new W(
     {
       ...e.nodes
       // TODO: If a serializer is defined in the config for a custom block, it
@@ -1464,20 +1436,84 @@ const Ie = "_bnEditor_4vj2p_3", Pe = "_bnRoot_4vj2p_20", _e = "_defaultStyles_4v
     },
     e.marks
   );
-}, $e = v.create({
+}, ze = T.create({
   addProseMirrorPlugins() {
     return [
-      new C({
+      new w({
         props: {
-          clipboardSerializer: Ue(this.editor.schema)
+          clipboardSerializer: Ve(this.editor.schema)
         }
       })
     ];
   }
-}), Ge = Ft(
-  (o) => o.type.name === "blockContainer"
+});
+class G {
+  constructor() {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    u(this, "callbacks", {});
+  }
+  on(e, t) {
+    return this.callbacks[e] || (this.callbacks[e] = []), this.callbacks[e].push(t), () => this.off(e, t);
+  }
+  emit(e, ...t) {
+    const o = this.callbacks[e];
+    o && o.forEach((r) => r.apply(this, t));
+  }
+  off(e, t) {
+    const o = this.callbacks[e];
+    o && (t ? this.callbacks[e] = o.filter((r) => r !== t) : delete this.callbacks[e]);
+  }
+  removeAllListeners() {
+    this.callbacks = {};
+  }
+}
+const Ue = zt(
+  (n) => n.type.name === "blockContainer"
 );
-function W() {
+class Fe {
+  constructor(e, t, o = () => {
+  }) {
+    u(this, "suggestionsMenuState");
+    u(this, "updateSuggestionsMenu");
+    u(this, "pluginState");
+    u(this, "handleScroll", () => {
+      var e;
+      if ((e = this.suggestionsMenuState) != null && e.show) {
+        const t = document.querySelector(
+          `[data-decoration-id="${this.pluginState.decorationId}"]`
+        );
+        this.suggestionsMenuState.referencePos = t.getBoundingClientRect(), this.updateSuggestionsMenu();
+      }
+    });
+    this.editor = e, this.pluginKey = t, this.pluginState = Y(), this.updateSuggestionsMenu = () => {
+      if (!this.suggestionsMenuState)
+        throw new Error("Attempting to update uninitialized suggestions menu");
+      o(this.suggestionsMenuState);
+    }, document.addEventListener("scroll", this.handleScroll);
+  }
+  update(e, t) {
+    const o = this.pluginKey.getState(t), r = this.pluginKey.getState(e.state), i = !o.active && r.active, s = o.active && !r.active, a = o.active && r.active;
+    if (!i && !a && !s)
+      return;
+    if (this.pluginState = s ? o : r, s || !this.editor.isEditable) {
+      this.suggestionsMenuState.show = !1, this.updateSuggestionsMenu();
+      return;
+    }
+    const l = document.querySelector(
+      `[data-decoration-id="${this.pluginState.decorationId}"]`
+    );
+    this.editor.isEditable && (this.suggestionsMenuState = {
+      show: !0,
+      referencePos: l.getBoundingClientRect(),
+      filteredItems: this.pluginState.items,
+      keyboardHoveredItemIndex: this.pluginState.keyboardHoveredItemIndex
+    }, this.updateSuggestionsMenu());
+  }
+  destroy() {
+    document.removeEventListener("scroll", this.handleScroll);
+  }
+}
+function Y() {
   return {
     active: !1,
     triggerCharacter: void 0,
@@ -1488,815 +1524,177 @@ function W() {
     decorationId: void 0
   };
 }
-class je {
-  constructor({
-    editor: e,
-    pluginKey: t,
-    onSelectItem: n = () => {
-    },
-    suggestionsMenuFactory: r
-  }) {
-    h(this, "editor");
-    h(this, "pluginKey");
-    h(this, "suggestionsMenu");
-    h(this, "pluginState");
-    h(this, "itemCallback");
-    h(this, "lastPosition");
-    this.editor = e, this.pluginKey = t, this.pluginState = W(), this.itemCallback = (i) => {
-      e._tiptapEditor.chain().focus().deleteRange({
-        from: this.pluginState.queryStartPos - this.pluginState.triggerCharacter.length,
-        to: e._tiptapEditor.state.selection.from
-      }).run(), n({
-        item: i,
-        editor: e
-      });
-    }, this.suggestionsMenu = r(this.getStaticParams());
-  }
-  update(e, t) {
-    const n = this.pluginKey.getState(t), r = this.pluginKey.getState(e.state), i = !n.active && r.active, a = n.active && !r.active, s = n.active && r.active;
-    !i && !s && !a || (this.pluginState = a ? n : r, (a || !this.editor.isEditable) && (this.suggestionsMenu.hide(), this.suggestionsMenu.element.removeEventListener(
-      "mousedown",
-      (l) => l.preventDefault()
-    )), s && this.suggestionsMenu.render(this.getDynamicParams(), !1), i && this.editor.isEditable && (this.suggestionsMenu.render(this.getDynamicParams(), !0), this.suggestionsMenu.element.addEventListener(
-      "mousedown",
-      (l) => l.preventDefault()
-    )));
-  }
-  getStaticParams() {
-    return {
-      itemCallback: (e) => this.itemCallback(e),
-      getReferenceRect: () => {
-        const e = document.querySelector(
-          `[data-decoration-id="${this.pluginState.decorationId}"]`
-        );
-        if (!e) {
-          if (this.lastPosition === void 0)
-            throw new Error(
-              "Attempted to access trigger character reference rect before rendering suggestions menu."
-            );
-          return this.lastPosition;
-        }
-        const t = e.getBoundingClientRect();
-        return this.lastPosition = t, t;
-      }
-    };
-  }
-  getDynamicParams() {
-    return {
-      items: this.pluginState.items,
-      keyboardHoveredItemIndex: this.pluginState.keyboardHoveredItemIndex
-    };
-  }
-}
-function qe({
-  pluginKey: o,
-  editor: e,
-  defaultTriggerCharacter: t,
-  suggestionsMenuFactory: n,
-  onSelectItem: r = () => {
-  },
-  items: i = () => []
-}) {
-  if (t.length !== 1)
+const Ge = (n, e, t, o, r = () => [], i = () => {
+}) => {
+  if (o.length !== 1)
     throw new Error("'char' should be a single character");
-  const a = (s) => {
-    s.dispatch(s.state.tr.setMeta(o, { deactivate: !0 }));
+  let s;
+  const a = (l) => {
+    l.dispatch(l.state.tr.setMeta(t, { deactivate: !0 }));
   };
-  return new C({
-    key: o,
-    view: (s) => new je({
-      editor: e,
-      pluginKey: o,
-      onSelectItem: (l) => {
-        a(s), r(l);
-      },
-      suggestionsMenuFactory: n
-    }),
-    state: {
-      // Initialize the plugin's internal state.
-      init() {
-        return W();
-      },
-      // Apply changes to the plugin state from an editor transaction.
-      apply(s, l, d, c) {
-        var p, f, m, b;
-        if (s.getMeta("orderedListIndexing") !== void 0)
-          return l;
-        if ((p = s.getMeta(o)) != null && p.activate)
-          return {
-            active: !0,
-            triggerCharacter: ((f = s.getMeta(o)) == null ? void 0 : f.triggerCharacter) || "",
-            queryStartPos: c.selection.from,
-            items: i(""),
-            keyboardHoveredItemIndex: 0,
-            // TODO: Maybe should be 1 if the menu has no possible items? Probably redundant since a menu with no items
-            //  is useless in practice.
-            notFoundCount: 0,
-            decorationId: `id_${Math.floor(Math.random() * 4294967295)}`
-          };
-        if (!l.active)
-          return l;
-        const u = { ...l };
-        if (u.items = i(
-          c.doc.textBetween(l.queryStartPos, c.selection.from)
-        ), u.notFoundCount = 0, u.items.length === 0 && (u.notFoundCount = Math.max(
-          0,
-          l.notFoundCount + (c.selection.from - d.selection.from)
-        )), // Highlighting text should hide the menu.
-        c.selection.from !== c.selection.to || // Transactions with plugin metadata {deactivate: true} should hide the menu.
-        (m = s.getMeta(o)) != null && m.deactivate || // Certain mouse events should hide the menu.
-        // TODO: Change to global mousedown listener.
-        s.getMeta("focus") || s.getMeta("blur") || s.getMeta("pointer") || // Moving the caret before the character which triggered the menu should hide it.
-        l.active && c.selection.from < l.queryStartPos || // Entering more than 3 characters, after the last query that matched with at least 1 menu item, should hide
-        // the menu.
-        u.notFoundCount > 3)
-          return W();
-        if (((b = s.getMeta(o)) == null ? void 0 : b.selectedItemIndexChanged) !== void 0) {
-          let y = s.getMeta(o).selectedItemIndexChanged;
-          y < 0 ? y = l.items.length - 1 : y >= l.items.length && (y = 0), u.keyboardHoveredItemIndex = y;
+  return {
+    plugin: new w({
+      key: t,
+      view: () => (s = new Fe(
+        n,
+        t,
+        e
+      ), s),
+      state: {
+        // Initialize the plugin's internal state.
+        init() {
+          return Y();
+        },
+        // Apply changes to the plugin state from an editor transaction.
+        apply(l, d, c, h) {
+          var f, m, g, b;
+          if (l.getMeta("orderedListIndexing") !== void 0)
+            return d;
+          if ((f = l.getMeta(t)) != null && f.activate)
+            return {
+              active: !0,
+              triggerCharacter: ((m = l.getMeta(t)) == null ? void 0 : m.triggerCharacter) || "",
+              queryStartPos: h.selection.from,
+              items: r(""),
+              keyboardHoveredItemIndex: 0,
+              // TODO: Maybe should be 1 if the menu has no possible items? Probably redundant since a menu with no items
+              //  is useless in practice.
+              notFoundCount: 0,
+              decorationId: `id_${Math.floor(Math.random() * 4294967295)}`
+            };
+          if (!d.active)
+            return d;
+          const p = { ...d };
+          if (p.items = r(
+            h.doc.textBetween(
+              d.queryStartPos,
+              h.selection.from
+            )
+          ), p.notFoundCount = 0, p.items.length === 0 && (p.notFoundCount = Math.max(
+            0,
+            d.notFoundCount + (h.selection.from - c.selection.from)
+          )), // Highlighting text should hide the menu.
+          h.selection.from !== h.selection.to || // Transactions with plugin metadata {deactivate: true} should hide the menu.
+          (g = l.getMeta(t)) != null && g.deactivate || // Certain mouse events should hide the menu.
+          // TODO: Change to global mousedown listener.
+          l.getMeta("focus") || l.getMeta("blur") || l.getMeta("pointer") || // Moving the caret before the character which triggered the menu should hide it.
+          d.active && h.selection.from < d.queryStartPos || // Entering more than 3 characters, after the last query that matched with at least 1 menu item, should hide
+          // the menu.
+          p.notFoundCount > 3)
+            return Y();
+          if (((b = l.getMeta(t)) == null ? void 0 : b.selectedItemIndexChanged) !== void 0) {
+            let C = l.getMeta(t).selectedItemIndexChanged;
+            C < 0 ? C = d.items.length - 1 : C >= d.items.length && (C = 0), p.keyboardHoveredItemIndex = C;
+          } else
+            c.selection.from !== h.selection.from && (p.keyboardHoveredItemIndex = 0);
+          return p;
         }
-        return u;
-      }
-    },
-    props: {
-      handleKeyDown(s, l) {
-        const d = this.getState(s.state).active;
-        if (l.key === t && !d)
-          return s.dispatch(
-            s.state.tr.insertText(t).scrollIntoView().setMeta(o, {
-              activate: !0,
-              triggerCharacter: t
+      },
+      props: {
+        handleKeyDown(l, d) {
+          const c = this.getState(l.state).active;
+          if (d.key === o && !c)
+            return l.dispatch(
+              l.state.tr.insertText(o).scrollIntoView().setMeta(t, {
+                activate: !0,
+                triggerCharacter: o
+              })
+            ), !0;
+          if (!c)
+            return !1;
+          const {
+            triggerCharacter: h,
+            queryStartPos: p,
+            items: f,
+            keyboardHoveredItemIndex: m
+          } = t.getState(l.state);
+          return d.key === "ArrowUp" ? (l.dispatch(
+            l.state.tr.setMeta(t, {
+              selectedItemIndexChanged: m - 1
             })
-          ), !0;
-        if (!d)
-          return !1;
-        const {
-          triggerCharacter: c,
-          queryStartPos: u,
-          items: p,
-          keyboardHoveredItemIndex: f
-        } = o.getState(s.state);
-        return l.key === "ArrowUp" ? (s.dispatch(
-          s.state.tr.setMeta(o, {
-            selectedItemIndexChanged: f - 1
-          })
-        ), !0) : l.key === "ArrowDown" ? (s.dispatch(
-          s.state.tr.setMeta(o, {
-            selectedItemIndexChanged: f + 1
-          })
-        ), !0) : l.key === "Enter" ? (a(s), e._tiptapEditor.chain().focus().deleteRange({
-          from: u - c.length,
-          to: e._tiptapEditor.state.selection.from
-        }).run(), r({
-          item: p[f],
-          editor: e
-        }), !0) : l.key === "Escape" ? (a(s), !0) : !1;
-      },
-      // Hides menu in cases where mouse click does not cause an editor state change.
-      handleClick(s) {
-        a(s);
-      },
-      // Setup decorator on the currently active suggestion.
-      decorations(s) {
-        const { active: l, decorationId: d, queryStartPos: c, triggerCharacter: u } = this.getState(s);
-        if (!l)
-          return null;
-        if (u === "") {
-          const p = Ge(s.selection);
-          if (p)
-            return F.create(s.doc, [
-              D.node(
-                p.pos,
-                p.pos + p.node.nodeSize,
-                {
-                  nodeName: "span",
-                  class: "suggestion-decorator",
-                  "data-decoration-id": d
-                }
-              )
-            ]);
-        }
-        return F.create(s.doc, [
-          D.inline(
-            c - u.length,
-            c,
-            {
-              nodeName: "span",
-              class: "suggestion-decorator",
-              "data-decoration-id": d
-            }
-          )
-        ]);
-      }
-    }
-  });
-}
-const X = new E("suggestions-slash-commands"), We = () => v.create({
-  name: "slash-command",
-  addOptions() {
-    return {
-      editor: void 0,
-      commands: void 0,
-      slashMenuFactory: void 0
-    };
-  },
-  addProseMirrorPlugins() {
-    if (!this.options.slashMenuFactory || !this.options.commands)
-      throw new Error("required args not defined for SlashMenuExtension");
-    const o = this.options.commands;
-    return [
-      qe({
-        pluginKey: X,
-        editor: this.options.editor,
-        defaultTriggerCharacter: "/",
-        suggestionsMenuFactory: this.options.slashMenuFactory,
-        items: (e) => o.filter(
-          (t) => t.match(e)
-        ),
-        onSelectItem: ({ item: e, editor: t }) => {
-          e.execute(t);
-        }
-      })
-    ];
-  }
-});
-class A extends G {
-  constructor(t, n) {
-    super(t, n);
-    h(this, "nodes");
-    const r = t.node();
-    this.nodes = [], t.doc.nodesBetween(t.pos, n.pos, (i, a, s) => {
-      if (s !== null && s.eq(r))
-        return this.nodes.push(i), !1;
-    });
-  }
-  static create(t, n, r = n) {
-    return new A(t.resolve(n), t.resolve(r));
-  }
-  content() {
-    return new T(P.from(this.nodes), 0, 0);
-  }
-  eq(t) {
-    if (!(t instanceof A) || this.nodes.length !== t.nodes.length || this.from !== t.from || this.to !== t.to)
-      return !1;
-    for (let n = 0; n < this.nodes.length; n++)
-      if (!this.nodes[n].eq(t.nodes[n]))
-        return !1;
-    return !0;
-  }
-  map(t, n) {
-    let r = n.mapResult(this.from), i = n.mapResult(this.to);
-    return i.deleted ? G.near(t.resolve(r.pos)) : r.deleted ? G.near(t.resolve(i.pos)) : new A(
-      t.resolve(r.pos),
-      t.resolve(i.pos)
-    );
-  }
-  toJSON() {
-    return { type: "node", anchor: this.anchor, head: this.head };
-  }
-}
-const Ve = ae.__serializeForClipboard;
-let w;
-function Pt(o, e) {
-  var r;
-  if (!e.dom.isConnected)
-    return;
-  let t = e.posAtCoords(o);
-  if (!t)
-    return;
-  let n = e.domAtPos(t.pos).node;
-  if (n !== e.dom) {
-    for (; n && n.parentNode && n.parentNode !== e.dom && !((r = n.hasAttribute) != null && r.call(n, "data-id")); )
-      n = n.parentNode;
-    if (n)
-      return { node: n, id: n.getAttribute("data-id") };
-  }
-}
-function Ye(o, e) {
-  let t = Pt(o, e);
-  if (t && t.node.nodeType === 1) {
-    const n = e.docView;
-    let r = n.nearestDesc(t.node, !0);
-    return !r || r === n ? null : r.posBefore;
-  }
-  return null;
-}
-function Ke(o, e) {
-  let t, n;
-  const r = e.resolve(o.from).node().type.spec.group === "blockContent", i = e.resolve(o.to).node().type.spec.group === "blockContent", a = Math.min(o.$anchor.depth, o.$head.depth);
-  if (r && i) {
-    const s = o.$from.start(a - 1), l = o.$to.end(a - 1);
-    t = e.resolve(s - 1).pos, n = e.resolve(l + 1).pos;
-  } else
-    t = o.from, n = o.to;
-  return { from: t, to: n };
-}
-function it(o, e, t = e) {
-  e === t && (t += o.state.doc.resolve(e + 1).node().nodeSize);
-  const n = o.domAtPos(e).node.cloneNode(!0), r = o.domAtPos(e).node, i = (c, u) => Array.prototype.indexOf.call(c.children, u), a = i(
-    r,
-    // Expects from position to be just before the first selected block.
-    o.domAtPos(e + 1).node.parentElement
-  ), s = i(
-    r,
-    // Expects to position to be just after the last selected block.
-    o.domAtPos(t - 1).node.parentElement
-  );
-  for (let c = r.childElementCount - 1; c >= 0; c--)
-    (c > s || c < a) && n.removeChild(n.children[c]);
-  _t(), w = n;
-  const d = o.dom.className.split(" ").filter(
-    (c) => !c.includes("bn") && !c.includes("ProseMirror") && !c.includes("editor")
-  ).join(" ");
-  w.className = w.className + " " + _.dragPreview + " " + d, document.body.appendChild(w);
-}
-function _t() {
-  w !== void 0 && (document.body.removeChild(w), w = void 0);
-}
-function Je(o, e) {
-  if (!o.dataTransfer)
-    return;
-  const t = e.dom.getBoundingClientRect();
-  let n = {
-    left: t.left + t.width / 2,
-    // take middle of editor
-    top: o.clientY
-  }, r = Ye(n, e);
-  if (r != null) {
-    const i = e.state.selection, a = e.state.doc, { from: s, to: l } = Ke(i, a), d = s <= r && r < l, c = i.$anchor.node() !== i.$head.node() || i instanceof A;
-    d && c ? (e.dispatch(
-      e.state.tr.setSelection(A.create(a, s, l))
-    ), it(e, s, l)) : (e.dispatch(
-      e.state.tr.setSelection($t.create(e.state.doc, r))
-    ), it(e, r));
-    let u = e.state.selection.content(), { dom: p, text: f } = Ve(e, u);
-    o.dataTransfer.clearData(), o.dataTransfer.setData("text/html", p.innerHTML), o.dataTransfer.setData("text/plain", f), o.dataTransfer.effectAllowed = "move", o.dataTransfer.setDragImage(w, 0, 0), e.dragging = { slice: u, move: !0 };
-  }
-}
-class Xe {
-  constructor({
-    tiptapEditor: e,
-    editor: t,
-    blockMenuFactory: n,
-    horizontalPosAnchoredAtRoot: r
-  }) {
-    h(this, "editor");
-    h(this, "ttEditor");
-    // When true, the drag handle with be anchored at the same level as root elements
-    // When false, the drag handle with be just to the left of the element
-    h(this, "horizontalPosAnchoredAtRoot");
-    h(this, "horizontalPosAnchor");
-    h(this, "blockMenu");
-    h(this, "hoveredBlock");
-    // Used to check if currently dragged content comes from this editor instance.
-    h(this, "isDragging", !1);
-    h(this, "menuOpen", !1);
-    h(this, "menuFrozen", !1);
-    h(this, "lastPosition");
-    /**
-     * Sets isDragging when dragging text.
-     */
-    h(this, "onDragStart", () => {
-      this.isDragging = !0;
-    });
-    /**
-     * If the event is outside the editor contents,
-     * we dispatch a fake event, so that we can still drop the content
-     * when dragging / dropping to the side of the editor
-     */
-    h(this, "onDrop", (e) => {
-      if (e.synthetic || !this.isDragging)
-        return;
-      let t = this.ttEditor.view.posAtCoords({
-        left: e.clientX,
-        top: e.clientY
-      });
-      if (this.isDragging = !1, !t || t.inside === -1) {
-        const n = new Event("drop", e), r = this.ttEditor.view.dom.firstChild.getBoundingClientRect();
-        n.clientX = r.left + r.width / 2, n.clientY = e.clientY, n.dataTransfer = e.dataTransfer, n.preventDefault = () => e.preventDefault(), n.synthetic = !0, this.ttEditor.view.dom.dispatchEvent(n);
-      }
-    });
-    /**
-     * If the event is outside the editor contents,
-     * we dispatch a fake event, so that we can still drop the content
-     * when dragging / dropping to the side of the editor
-     */
-    h(this, "onDragOver", (e) => {
-      if (e.synthetic || !this.isDragging)
-        return;
-      let t = this.ttEditor.view.posAtCoords({
-        left: e.clientX,
-        top: e.clientY
-      });
-      if (!t || t.inside === -1) {
-        const n = new Event("dragover", e), r = this.ttEditor.view.dom.firstChild.getBoundingClientRect();
-        n.clientX = r.left + r.width / 2, n.clientY = e.clientY, n.dataTransfer = e.dataTransfer, n.preventDefault = () => e.preventDefault(), n.synthetic = !0, this.ttEditor.view.dom.dispatchEvent(n);
-      }
-    });
-    h(this, "onKeyDown", (e) => {
-      this.menuOpen && (this.menuOpen = !1, this.blockMenu.hide()), this.menuFrozen = !1;
-    });
-    h(this, "onMouseDown", (e) => {
-      var t;
-      (t = this.blockMenu.element) != null && t.contains(e.target) || (this.menuOpen && (this.menuOpen = !1, this.blockMenu.hide()), this.menuFrozen = !1);
-    });
-    h(this, "onMouseMove", (e) => {
-      var l, d, c;
-      if (this.menuFrozen)
-        return;
-      const t = this.ttEditor.view.dom.firstChild.getBoundingClientRect(), n = this.ttEditor.view.dom.getBoundingClientRect();
-      if (
-        // Cursor is within the editor area
-        e.clientX >= n.left && e.clientX <= n.right && e.clientY >= n.top && e.clientY <= n.bottom && // An element is hovered
-        e && e.target && // Element is outside the editor
-        this.ttEditor.view.dom !== e.target && !this.ttEditor.view.dom.contains(e.target) && // Element is outside the side menu
-        this.blockMenu.element !== e.target && !((l = this.blockMenu.element) != null && l.contains(e.target))
-      ) {
-        this.menuOpen && (this.menuOpen = !1, this.blockMenu.hide());
-        return;
-      }
-      this.horizontalPosAnchor = t.x;
-      const i = {
-        left: t.left + t.width / 2,
-        // take middle of editor
-        top: e.clientY
-      }, a = Pt(i, this.ttEditor.view);
-      if (!a || !this.editor.isEditable) {
-        this.menuOpen && (this.menuOpen = !1, this.blockMenu.hide());
-        return;
-      }
-      this.menuOpen && ((d = this.hoveredBlock) != null && d.hasAttribute("data-id")) && ((c = this.hoveredBlock) == null ? void 0 : c.getAttribute("data-id")) === a.id || (this.hoveredBlock = a.node, !a.node.firstChild) || this.editor.isEditable && (this.menuOpen ? this.blockMenu.render(this.getDynamicParams(), !1) : (this.menuOpen = !0, this.blockMenu.render(this.getDynamicParams(), !0)));
-    });
-    this.editor = t, this.ttEditor = e, this.horizontalPosAnchoredAtRoot = r, this.horizontalPosAnchor = this.ttEditor.view.dom.firstChild.getBoundingClientRect().x, this.blockMenu = n(this.getStaticParams()), document.body.addEventListener("drop", this.onDrop, !0), document.body.addEventListener("dragover", this.onDragOver), this.ttEditor.view.dom.addEventListener("dragstart", this.onDragStart), document.body.addEventListener("mousemove", this.onMouseMove, !0), document.body.addEventListener("mousedown", this.onMouseDown, !0), document.body.addEventListener("keydown", this.onKeyDown, !0);
-  }
-  destroy() {
-    this.menuOpen && (this.menuOpen = !1, this.blockMenu.hide()), document.body.removeEventListener("mousemove", this.onMouseMove), document.body.removeEventListener("dragover", this.onDragOver), this.ttEditor.view.dom.removeEventListener("dragstart", this.onDragStart), document.body.removeEventListener("drop", this.onDrop), document.body.removeEventListener("mousedown", this.onMouseDown), document.body.removeEventListener("keydown", this.onKeyDown);
-  }
-  addBlock() {
-    this.menuOpen = !1, this.menuFrozen = !0, this.blockMenu.hide();
-    const t = this.hoveredBlock.firstChild.getBoundingClientRect(), n = this.ttEditor.view.posAtCoords({
-      left: t.left + t.width / 2,
-      top: t.top + t.height / 2
-    });
-    if (!n)
-      return;
-    const r = g(this.ttEditor.state.doc, n.pos);
-    if (r === void 0)
-      return;
-    const { contentNode: i, endPos: a } = r;
-    if (i.textContent.length !== 0) {
-      const s = a + 1, l = s + 2;
-      this.ttEditor.chain().BNCreateBlock(s).BNUpdateBlock(l, { type: "paragraph", props: {} }).setTextSelection(l).run();
-    } else
-      this.ttEditor.commands.setTextSelection(a);
-    this.ttEditor.view.focus(), this.ttEditor.view.dispatch(
-      this.ttEditor.view.state.tr.scrollIntoView().setMeta(X, {
-        // TODO import suggestion plugin key
-        activate: !0,
-        type: "drag"
-      })
-    );
-  }
-  getStaticParams() {
-    return {
-      editor: this.editor,
-      addBlock: () => this.addBlock(),
-      blockDragStart: (e) => {
-        this.isDragging = !0, Je(e, this.ttEditor.view);
-      },
-      blockDragEnd: () => _t(),
-      freezeMenu: () => {
-        this.menuFrozen = !0;
-      },
-      unfreezeMenu: () => {
-        this.menuFrozen = !1;
-      },
-      getReferenceRect: () => {
-        if (!this.menuOpen) {
-          if (this.lastPosition === void 0)
-            throw new Error(
-              "Attempted to access block reference rect before rendering block side menu."
-            );
-          return this.lastPosition;
-        }
-        const t = this.hoveredBlock.firstChild.getBoundingClientRect();
-        return this.horizontalPosAnchoredAtRoot && (t.x = this.horizontalPosAnchor), this.lastPosition = t, t;
-      }
-    };
-  }
-  getDynamicParams() {
-    return {
-      block: this.editor.getBlock(this.hoveredBlock.getAttribute("data-id"))
-    };
-  }
-}
-const Ze = (o) => new C({
-  key: new E("DraggableBlocksPlugin"),
-  view: () => new Xe({
-    tiptapEditor: o.tiptapEditor,
-    editor: o.editor,
-    blockMenuFactory: o.blockSideMenuFactory,
-    horizontalPosAnchoredAtRoot: !0
-  })
-}), Qe = () => v.create({
-  name: "DraggableBlocksExtension",
-  priority: 1e3,
-  // Need to be high, in order to hide menu when typing slash
-  addProseMirrorPlugins() {
-    if (!this.options.blockSideMenuFactory)
-      throw new Error(
-        "UI Element factory not defined for DraggableBlocksExtension"
-      );
-    return [
-      Ze({
-        tiptapEditor: this.editor,
-        editor: this.options.editor,
-        blockSideMenuFactory: this.options.blockSideMenuFactory
-      })
-    ];
-  }
-});
-class to {
-  constructor({
-    editor: e,
-    tiptapEditor: t,
-    formattingToolbarFactory: n,
-    view: r
-  }) {
-    h(this, "editor");
-    h(this, "ttEditor");
-    h(this, "view");
-    h(this, "formattingToolbar");
-    h(this, "preventHide", !1);
-    h(this, "preventShow", !1);
-    h(this, "toolbarIsOpen", !1);
-    h(this, "prevWasEditable", null);
-    h(this, "lastPosition");
-    h(this, "shouldShow", ({ view: e, state: t, from: n, to: r }) => {
-      const { doc: i, selection: a } = t, { empty: s } = a, l = !i.textBetween(n, r).length && Rt(t.selection);
-      return !(!e.hasFocus() || s || l);
-    });
-    h(this, "viewMousedownHandler", () => {
-      this.preventShow = !0;
-    });
-    h(this, "viewMouseupHandler", () => {
-      this.preventShow = !1, setTimeout(() => this.update(this.ttEditor.view));
-    });
-    h(this, "dragstartHandler", () => {
-      this.formattingToolbar.hide(), this.toolbarIsOpen = !1;
-    });
-    h(this, "focusHandler", () => {
-      setTimeout(() => this.update(this.ttEditor.view));
-    });
-    h(this, "blurHandler", ({ event: e }) => {
-      var t;
-      if (this.preventHide) {
-        this.preventHide = !1;
-        return;
-      }
-      // An element is clicked.
-      e && e.relatedTarget && // Element is outside the toolbar.
-      (this.formattingToolbar.element === e.relatedTarget || (t = this.formattingToolbar.element) != null && t.contains(e.relatedTarget)) || this.toolbarIsOpen && (this.formattingToolbar.hide(), this.toolbarIsOpen = !1);
-    });
-    this.editor = e, this.ttEditor = t, this.view = r, this.formattingToolbar = n(this.getStaticParams()), this.view.dom.addEventListener("mousedown", this.viewMousedownHandler), this.view.dom.addEventListener("mouseup", this.viewMouseupHandler), this.view.dom.addEventListener("dragstart", this.dragstartHandler), this.ttEditor.on("focus", this.focusHandler), this.ttEditor.on("blur", this.blurHandler);
-  }
-  update(e, t) {
-    var p;
-    const { state: n, composing: r } = e, { doc: i, selection: a } = n, s = t && t.doc.eq(i) && t.selection.eq(a);
-    if ((this.prevWasEditable === null || this.prevWasEditable === this.editor.isEditable) && (r || s))
-      return;
-    this.prevWasEditable = this.editor.isEditable;
-    const { ranges: l } = a, d = Math.min(...l.map((f) => f.$from.pos)), c = Math.max(...l.map((f) => f.$to.pos)), u = (p = this.shouldShow) == null ? void 0 : p.call(this, {
-      view: e,
-      state: n,
-      from: d,
-      to: c
-    });
-    if (this.editor.isEditable && !this.toolbarIsOpen && !this.preventShow && (u || this.preventHide)) {
-      this.formattingToolbar.render({}, !0), this.toolbarIsOpen = !0;
-      return;
-    }
-    if (this.toolbarIsOpen && !this.preventShow && (u || this.preventHide)) {
-      this.formattingToolbar.render({}, !1);
-      return;
-    }
-    if (this.toolbarIsOpen && !this.preventHide && (!u || this.preventShow || !this.editor.isEditable)) {
-      this.formattingToolbar.hide(), this.toolbarIsOpen = !1;
-      return;
-    }
-  }
-  destroy() {
-    this.view.dom.removeEventListener("mousedown", this.viewMousedownHandler), this.view.dom.removeEventListener("mouseup", this.viewMouseupHandler), this.view.dom.removeEventListener("dragstart", this.dragstartHandler), this.ttEditor.off("focus", this.focusHandler), this.ttEditor.off("blur", this.blurHandler);
-  }
-  getSelectionBoundingBox() {
-    const { state: e } = this.ttEditor.view, { selection: t } = e, { ranges: n } = t, r = Math.min(...n.map((a) => a.$from.pos)), i = Math.max(...n.map((a) => a.$to.pos));
-    if (zt(t)) {
-      const a = this.ttEditor.view.nodeDOM(r);
-      if (a)
-        return a.getBoundingClientRect();
-    }
-    return at(this.ttEditor.view, r, i);
-  }
-  getStaticParams() {
-    return {
-      editor: this.editor,
-      getReferenceRect: () => {
-        if (!this.toolbarIsOpen) {
-          if (this.lastPosition === void 0)
-            throw new Error(
-              "Attempted to access selection reference rect before rendering formatting toolbar."
-            );
-          return this.lastPosition;
-        }
-        const e = this.getSelectionBoundingBox();
-        return this.lastPosition = e, e;
-      }
-    };
-  }
-}
-const eo = (o) => new C({
-  key: new E("FormattingToolbarPlugin"),
-  view: (e) => new to({ view: e, ...o })
-}), oo = () => v.create({
-  name: "FormattingToolbarExtension",
-  addProseMirrorPlugins() {
-    if (!this.options.formattingToolbarFactory || !this.options.editor)
-      throw new Error(
-        "required args not defined for FormattingToolbarExtension"
-      );
-    return [
-      eo({
-        tiptapEditor: this.editor,
-        editor: this.options.editor,
-        formattingToolbarFactory: this.options.formattingToolbarFactory,
-        pluginKey: new E("FormattingToolbarPlugin")
-      })
-    ];
-  }
-}), no = new E("HyperlinkToolbarPlugin");
-class ro {
-  constructor({ editor: e, hyperlinkToolbarFactory: t }) {
-    h(this, "editor");
-    h(this, "hyperlinkToolbar");
-    h(this, "menuUpdateTimer");
-    h(this, "startMenuUpdateTimer");
-    h(this, "stopMenuUpdateTimer");
-    h(this, "mouseHoveredHyperlinkMark");
-    h(this, "mouseHoveredHyperlinkMarkRange");
-    h(this, "keyboardHoveredHyperlinkMark");
-    h(this, "keyboardHoveredHyperlinkMarkRange");
-    h(this, "hyperlinkMark");
-    h(this, "hyperlinkMarkRange");
-    h(this, "lastPosition");
-    h(this, "mouseOverHandler", (e) => {
-      if (this.mouseHoveredHyperlinkMark = void 0, this.mouseHoveredHyperlinkMarkRange = void 0, this.stopMenuUpdateTimer(), e.target instanceof HTMLAnchorElement && e.target.nodeName === "A") {
-        const t = e.target, n = this.editor.view.posAtDOM(t, 0) + 1, r = this.editor.state.doc.resolve(
-          n
-        ), i = r.marks();
-        for (const a of i)
-          if (a.type.name === this.editor.schema.mark("link").type.name) {
-            this.mouseHoveredHyperlinkMark = a, this.mouseHoveredHyperlinkMarkRange = Q(
-              r,
-              a.type,
-              a.attrs
-            ) || void 0;
-            break;
+          ), !0) : d.key === "ArrowDown" ? (l.dispatch(
+            l.state.tr.setMeta(t, {
+              selectedItemIndexChanged: m + 1
+            })
+          ), !0) : d.key === "Enter" ? (a(l), n._tiptapEditor.chain().focus().deleteRange({
+            from: p - h.length,
+            to: n._tiptapEditor.state.selection.from
+          }).run(), i({
+            item: f[m],
+            editor: n
+          }), !0) : d.key === "Escape" ? (a(l), !0) : !1;
+        },
+        // Setup decorator on the currently active suggestion.
+        decorations(l) {
+          const { active: d, decorationId: c, queryStartPos: h, triggerCharacter: p } = this.getState(l);
+          if (!d)
+            return null;
+          if (p === "") {
+            const f = Ue(l.selection);
+            if (f)
+              return z.create(l.doc, [
+                V.node(
+                  f.pos,
+                  f.pos + f.node.nodeSize,
+                  {
+                    nodeName: "span",
+                    class: "suggestion-decorator",
+                    "data-decoration-id": c
+                  }
+                )
+              ]);
           }
-      }
-      return this.startMenuUpdateTimer(), !1;
-    });
-    h(this, "clickHandler", (e) => {
-      var t;
-      // Toolbar is open.
-      this.hyperlinkMark && // An element is clicked.
-      e && e.target && // Element is outside the editor.
-      this.editor.view.dom !== e.target && !this.editor.view.dom.contains(e.target) && // Element is outside the toolbar.
-      this.hyperlinkToolbar.element !== e.target && !((t = this.hyperlinkToolbar.element) != null && t.contains(e.target)) && this.hyperlinkToolbar.hide();
-    });
-    this.editor = e, this.hyperlinkToolbar = t(this.getStaticParams()), this.startMenuUpdateTimer = () => {
-      this.menuUpdateTimer = setTimeout(() => {
-        this.update();
-      }, 250);
-    }, this.stopMenuUpdateTimer = () => (this.menuUpdateTimer && (clearTimeout(this.menuUpdateTimer), this.menuUpdateTimer = void 0), !1), this.editor.view.dom.addEventListener("mouseover", this.mouseOverHandler), document.addEventListener("click", this.clickHandler, !0);
-  }
-  update() {
-    var t, n, r, i;
-    if (!this.editor.view.hasFocus())
-      return;
-    const e = this.hyperlinkMark;
-    if (this.hyperlinkMark = void 0, this.hyperlinkMarkRange = void 0, this.keyboardHoveredHyperlinkMark = void 0, this.keyboardHoveredHyperlinkMarkRange = void 0, this.editor.state.selection.empty) {
-      const a = this.editor.state.selection.$from.marks();
-      for (const s of a)
-        if (s.type.name === this.editor.schema.mark("link").type.name) {
-          this.keyboardHoveredHyperlinkMark = s, this.keyboardHoveredHyperlinkMarkRange = Q(
-            this.editor.state.selection.$from,
-            s.type,
-            s.attrs
-          ) || void 0;
-          break;
+          return z.create(l.doc, [
+            V.inline(
+              h - p.length,
+              h,
+              {
+                nodeName: "span",
+                class: "suggestion-decorator",
+                "data-decoration-id": c
+              }
+            )
+          ]);
         }
-    }
-    if (this.mouseHoveredHyperlinkMark && (this.hyperlinkMark = this.mouseHoveredHyperlinkMark, this.hyperlinkMarkRange = this.mouseHoveredHyperlinkMarkRange), this.keyboardHoveredHyperlinkMark && (this.hyperlinkMark = this.keyboardHoveredHyperlinkMark, this.hyperlinkMarkRange = this.keyboardHoveredHyperlinkMarkRange), this.hyperlinkMark && this.editor.isEditable) {
-      if (this.getDynamicParams(), !e) {
-        this.hyperlinkToolbar.render(this.getDynamicParams(), !0), (t = this.hyperlinkToolbar.element) == null || t.addEventListener(
-          "mouseleave",
-          this.startMenuUpdateTimer
-        ), (n = this.hyperlinkToolbar.element) == null || n.addEventListener(
-          "mouseenter",
-          this.stopMenuUpdateTimer
-        );
-        return;
       }
-      this.hyperlinkToolbar.render(this.getDynamicParams(), !1);
-      return;
+    }),
+    itemCallback: (l) => {
+      a(n._tiptapEditor.view), n._tiptapEditor.chain().focus().deleteRange({
+        from: s.pluginState.queryStartPos - s.pluginState.triggerCharacter.length,
+        to: n._tiptapEditor.state.selection.from
+      }).run(), i({
+        item: l,
+        editor: n
+      });
     }
-    if (e && (!this.hyperlinkMark || !this.editor.isEditable)) {
-      (r = this.hyperlinkToolbar.element) == null || r.removeEventListener(
-        "mouseleave",
-        this.startMenuUpdateTimer
-      ), (i = this.hyperlinkToolbar.element) == null || i.removeEventListener(
-        "mouseenter",
-        this.stopMenuUpdateTimer
-      ), this.hyperlinkToolbar.hide();
-      return;
-    }
-  }
-  destroy() {
-    this.editor.view.dom.removeEventListener(
-      "mouseover",
-      this.mouseOverHandler
+  };
+}, X = new M("SlashMenuPlugin");
+class $e extends G {
+  constructor(t, o) {
+    super();
+    u(this, "plugin");
+    u(this, "itemCallback");
+    const r = Ge(
+      t,
+      (i) => {
+        this.emit("update", i);
+      },
+      X,
+      "/",
+      (i) => o.filter(
+        ({ name: s, aliases: a }) => s.toLowerCase().startsWith(i.toLowerCase()) || a && a.filter(
+          (l) => l.toLowerCase().startsWith(i.toLowerCase())
+        ).length !== 0
+      ),
+      ({ item: i, editor: s }) => i.execute(s)
     );
+    this.plugin = r.plugin, this.itemCallback = r.itemCallback;
   }
-  getStaticParams() {
-    return {
-      editHyperlink: (e, t) => {
-        const n = this.editor.view.state.tr.insertText(
-          t,
-          this.hyperlinkMarkRange.from,
-          this.hyperlinkMarkRange.to
-        );
-        n.addMark(
-          this.hyperlinkMarkRange.from,
-          this.hyperlinkMarkRange.from + t.length,
-          this.editor.schema.mark("link", { href: e })
-        ), this.editor.view.dispatch(n), this.editor.view.focus(), this.hyperlinkToolbar.hide();
-      },
-      deleteHyperlink: () => {
-        this.editor.view.dispatch(
-          this.editor.view.state.tr.removeMark(
-            this.hyperlinkMarkRange.from,
-            this.hyperlinkMarkRange.to,
-            this.hyperlinkMark.type
-          ).setMeta("preventAutolink", !0)
-        ), this.editor.view.focus(), this.hyperlinkToolbar.hide();
-      },
-      getReferenceRect: () => {
-        if (!this.hyperlinkMark) {
-          if (this.lastPosition === void 0)
-            throw new Error(
-              "Attempted to access hyperlink reference rect before rendering hyperlink toolbar."
-            );
-          return this.lastPosition;
-        }
-        const e = at(
-          this.editor.view,
-          this.hyperlinkMarkRange.from,
-          this.hyperlinkMarkRange.to
-        );
-        return this.lastPosition = e, e;
-      }
-    };
-  }
-  getDynamicParams() {
-    return {
-      url: this.hyperlinkMark.attrs.href,
-      text: this.editor.view.state.doc.textBetween(
-        this.hyperlinkMarkRange.from,
-        this.hyperlinkMarkRange.to
-      )
-    };
+  onUpdate(t) {
+    return this.on("update", t);
   }
 }
-const io = (o, e) => new C({
-  key: no,
-  view: () => new ro({
-    editor: o,
-    hyperlinkToolbarFactory: e.hyperlinkToolbarFactory
-  })
-}), so = ut.extend({
-  priority: 500,
-  addProseMirrorPlugins() {
-    var o;
-    if (!this.options.hyperlinkToolbarFactory)
-      throw new Error("UI Element factory not defined for HyperlinkMark");
-    return [
-      ...((o = this.parent) == null ? void 0 : o.call(this)) || [],
-      io(this.editor, {
-        hyperlinkToolbarFactory: this.options.hyperlinkToolbarFactory
-      })
-    ];
-  }
-}), ao = new E("blocknote-placeholder"), lo = v.create({
+const je = new M("blocknote-placeholder"), qe = T.create({
   name: "placeholder",
   addOptions() {
     return {
@@ -2312,197 +1710,30 @@ const io = (o, e) => new C({
   },
   addProseMirrorPlugins() {
     return [
-      new C({
-        key: ao,
+      new w({
+        key: je,
         props: {
-          decorations: (o) => {
-            const { doc: e, selection: t } = o, n = X.getState(o), r = this.editor.isEditable || !this.options.showOnlyWhenEditable, { anchor: i } = t, a = [];
+          decorations: (n) => {
+            const { doc: e, selection: t } = n, o = X.getState(n), r = this.editor.isEditable || !this.options.showOnlyWhenEditable, { anchor: i } = t, s = [];
             if (r)
-              return e.descendants((s, l) => {
-                const d = i >= l && i <= l + s.nodeSize, c = !s.isLeaf && !s.childCount;
+              return e.descendants((a, l) => {
+                const d = i >= l && i <= l + a.nodeSize, c = !a.isLeaf && !a.childCount;
                 if ((d || !this.options.showOnlyCurrent) && c) {
-                  const u = [this.options.emptyNodeClass];
-                  this.editor.isEmpty && u.push(this.options.emptyEditorClass), d && u.push(this.options.hasAnchorClass), (n == null ? void 0 : n.triggerCharacter) === "" && (n != null && n.active) && u.push(this.options.isFilterClass);
-                  const p = D.node(l, l + s.nodeSize, {
-                    class: u.join(" ")
+                  const h = [this.options.emptyNodeClass];
+                  this.editor.isEmpty && h.push(this.options.emptyEditorClass), d && h.push(this.options.hasAnchorClass), (o == null ? void 0 : o.triggerCharacter) === "" && (o != null && o.active) && h.push(this.options.isFilterClass);
+                  const p = V.node(l, l + a.nodeSize, {
+                    class: h.join(" ")
                   });
-                  a.push(p);
+                  s.push(p);
                 }
                 return this.options.includeChildren;
-              }), F.create(e, a);
+              }), z.create(e, s);
           }
         }
       })
     ];
   }
-});
-class co {
-  constructor(e, t) {
-    this.name = e, this.match = t;
-  }
-}
-class S extends co {
-  /**
-   * Constructs a new slash-command.
-   *
-   * @param name The name of the command
-   * @param execute The callback for creating a new node
-   * @param aliases Aliases for this command
-   */
-  constructor(e, t, n = []) {
-    super(e, (r) => this.name.toLowerCase().startsWith(r.toLowerCase()) || this.aliases.filter(
-      (i) => i.toLowerCase().startsWith(r.toLowerCase())
-    ).length !== 0), this.name = e, this.execute = t, this.aliases = n;
-  }
-}
-function I(o, e) {
-  const t = o.getTextCursorPosition().block;
-  t.content.length === 1 && t.content[0].type === "text" && t.content[0].text === "/" || t.content.length === 0 ? o.updateBlock(t, e) : (o.insertBlocks([e], t, "after"), o.setTextCursorPosition(o.getTextCursorPosition().nextBlock));
-}
-const uo = [
-  // Command for creating a level 1 heading
-  new S(
-    "Heading",
-    (o) => I(o, {
-      type: "heading",
-      props: { level: "1" }
-    }),
-    ["h", "heading1", "h1"]
-  ),
-  // Command for creating a level 2 heading
-  new S(
-    "Heading 2",
-    (o) => I(o, {
-      type: "heading",
-      props: { level: "2" }
-    }),
-    ["h2", "heading2", "subheading"]
-  ),
-  // Command for creating a level 3 heading
-  new S(
-    "Heading 3",
-    (o) => I(o, {
-      type: "heading",
-      props: { level: "3" }
-    }),
-    ["h3", "heading3", "subheading"]
-  ),
-  // Command for creating an ordered list
-  new S(
-    "Numbered List",
-    (o) => I(o, {
-      type: "numberedListItem"
-    }),
-    ["li", "list", "numberedlist", "numbered list"]
-  ),
-  // Command for creating a bullet list
-  new S(
-    "Bullet List",
-    (o) => I(o, {
-      type: "bulletListItem"
-    }),
-    ["ul", "list", "bulletlist", "bullet list"]
-  ),
-  // Command for creating a paragraph (pretty useless)
-  new S(
-    "Paragraph",
-    (o) => I(o, {
-      type: "paragraph"
-    }),
-    ["p"]
-  )
-  //     replaceRangeWithNode(editor, range, node);
-  //     return true;
-  //   },
-  //   ["ol", "orderedlist"],
-  //   OrderedListIcon,
-  //   "Used to display an ordered (enumerated) list item"
-  // ),
-  // Command for creating a blockquote
-  // blockquote: new SlashCommand(
-  //   "Block Quote",
-  //   CommandGroup.BASIC_BLOCKS,
-  //   (editor, range) => {
-  //     const paragraph = editor.schema.node("paragraph");
-  //     const node = editor.schema.node(
-  //       "blockquote",
-  //       { "block-id": uniqueId.generate() },
-  //       paragraph
-  //     );
-  //     replaceRangeWithNode(editor, range, node);
-  //     return true;
-  //   },
-  //   ["quote", "blockquote"],
-  //   QuoteIcon,
-  //   "Used to make a quote stand out",
-  //   "Ctrl+Shift+B"
-  // ),
-  // Command for creating a horizontal rule
-  // horizontalRule: new SlashCommand(
-  //   "Horizontal Rule",
-  //   CommandGroup.BASIC_BLOCKS,
-  //   (editor, range) => {
-  //     const node = editor.schema.node("horizontalRule", {
-  //       "block-id": uniqueId.generate(),
-  //     });
-  //     // insert horizontal rule, create a new block after the horizontal rule if applicable
-  //     // and put the cursor in the block after the horizontal rule.
-  //     editor
-  //       .chain()
-  //       .focus()
-  //       .replaceRangeAndUpdateSelection(range, node)
-  //       .command(({ tr, dispatch }) => {
-  //         if (dispatch) {
-  //           // the node immediately after the cursor
-  //           const nodeAfter = tr.selection.$to.nodeAfter;
-  //           // the position of the cursor
-  //           const cursorPos = tr.selection.$to.pos;
-  //           // check if there is no node after the cursor (end of document)
-  //           if (!nodeAfter) {
-  //             // create a new block of the default type (probably paragraph) after the cursor
-  //             const { parent } = tr.selection.$to;
-  //             const node = parent.type.contentMatch.defaultType?.create();
-  //             if (node) {
-  //               tr.insert(cursorPos, node);
-  //             }
-  //           }
-  //           // try to put the cursor at the start of the node directly after the inserted horizontal rule
-  //           tr.doc.nodesBetween(cursorPos, cursorPos + 1, (node, pos) => {
-  //             if (node.type.name !== "horizontalRule") {
-  //               tr.setSelection(TextSelection.create(tr.doc, pos));
-  //             }
-  //           });
-  //         }
-  //         return true;
-  //       })
-  //       .scrollIntoView()
-  //       .run();
-  //     return true;
-  //   },
-  //   ["hr", "horizontalrule"],
-  //   SeparatorIcon,
-  //   "Used to separate sections with a horizontal line"
-  // ),
-  // Command for creating a table
-  // table: new SlashCommand(
-  //   "Table",
-  //   CommandGroup.BASIC_BLOCKS,
-  //   (editor, range) => {
-  //     editor.chain().focus().deleteRange(range).run();
-  //     // TODO: add blockid, pending https://github.com/ueberdosis/tiptap/pull/1469
-  //     editor
-  //       .chain()
-  //       .focus()
-  //       .insertTable({ rows: 1, cols: 2, withHeaderRow: false })
-  //       .scrollIntoView()
-  //       .run();
-  //     return true;
-  //   },
-  //   ["table", "database"],
-  //   TableIcon,
-  //   "Used to create a simple table"
-  // ),
-], ho = v.create({
+}), We = T.create({
   name: "textAlignment",
   addGlobalAttributes() {
     return [
@@ -2513,9 +1744,9 @@ const uo = [
         attributes: {
           textAlignment: {
             default: "left",
-            parseHTML: (o) => o.getAttribute("data-text-alignment"),
-            renderHTML: (o) => o.textAlignment !== "left" && {
-              "data-text-alignment": o.textAlignment
+            parseHTML: (n) => n.getAttribute("data-text-alignment"),
+            renderHTML: (n) => n.textAlignment !== "left" && {
+              "data-text-alignment": n.textAlignment
             }
           }
         }
@@ -2524,23 +1755,23 @@ const uo = [
   },
   addCommands() {
     return {
-      setTextAlignment: (o) => ({ state: e }) => {
-        const t = [], n = g(
+      setTextAlignment: (n) => ({ state: e }) => {
+        const t = [], o = k(
           e.doc,
           e.selection.from
         );
-        if (n === void 0)
+        if (o === void 0)
           return !1;
-        let r = n.startPos;
+        let r = o.startPos;
         for (; r < e.selection.to; )
           e.doc.resolve(r).node().type.spec.group === "blockContent" ? (t.push(r - 1), r += e.doc.resolve(r).node().nodeSize - 1) : r += 1;
         for (const i of t)
-          e.tr.setNodeAttribute(i, "textAlignment", o);
+          e.tr.setNodeAttribute(i, "textAlignment", n);
         return !0;
       }
     };
   }
-}), po = v.create({
+}), Ye = T.create({
   name: "blockTextColor",
   addGlobalAttributes() {
     return [
@@ -2549,9 +1780,9 @@ const uo = [
         attributes: {
           textColor: {
             default: "default",
-            parseHTML: (o) => o.hasAttribute("data-text-color") ? o.getAttribute("data-text-color") : "default",
-            renderHTML: (o) => o.textColor !== "default" && {
-              "data-text-color": o.textColor
+            parseHTML: (n) => n.hasAttribute("data-text-color") ? n.getAttribute("data-text-color") : "default",
+            renderHTML: (n) => n.textColor !== "default" && {
+              "data-text-color": n.textColor
             }
           }
         }
@@ -2560,21 +1791,21 @@ const uo = [
   },
   addCommands() {
     return {
-      setBlockTextColor: (o, e) => ({ state: t, view: n }) => {
-        const r = g(t.doc, o);
-        return r === void 0 ? !1 : (t.tr.setNodeAttribute(r.startPos - 1, "textColor", e), n.focus(), !0);
+      setBlockTextColor: (n, e) => ({ state: t, view: o }) => {
+        const r = k(t.doc, n);
+        return r === void 0 ? !1 : (t.tr.setNodeAttribute(r.startPos - 1, "textColor", e), o.focus(), !0);
       }
     };
   }
-}), fo = st.create({
+}), Ke = lt.create({
   name: "textColor",
   addAttributes() {
     return {
       color: {
         default: void 0,
-        parseHTML: (o) => o.getAttribute("data-text-color"),
-        renderHTML: (o) => ({
-          "data-text-color": o.color
+        parseHTML: (n) => n.getAttribute("data-text-color"),
+        renderHTML: (n) => ({
+          "data-text-color": n.color
         })
       }
     };
@@ -2583,28 +1814,28 @@ const uo = [
     return [
       {
         tag: "span",
-        getAttrs: (o) => typeof o == "string" ? !1 : o.hasAttribute("data-text-color") ? { color: o.getAttribute("data-text-color") } : !1
+        getAttrs: (n) => typeof n == "string" ? !1 : n.hasAttribute("data-text-color") ? { color: n.getAttribute("data-text-color") } : !1
       }
     ];
   },
-  renderHTML({ HTMLAttributes: o }) {
-    return ["span", o, 0];
+  renderHTML({ HTMLAttributes: n }) {
+    return ["span", n, 0];
   },
   addCommands() {
     return {
-      setTextColor: (o) => ({ commands: e }) => o !== "default" ? e.setMark(this.name, { color: o }) : e.unsetMark(this.name)
+      setTextColor: (n) => ({ commands: e }) => n !== "default" ? e.setMark(this.name, { color: n }) : e.unsetMark(this.name)
     };
   }
-}), mo = v.create({
+}), Je = T.create({
   name: "trailingNode",
   addProseMirrorPlugins() {
-    const o = new E(this.name);
+    const n = new M(this.name);
     return [
-      new C({
-        key: o,
-        appendTransaction: (e, t, n) => {
-          const { doc: r, tr: i, schema: a } = n, s = o.getState(n), l = r.content.size - 2, d = a.nodes.blockContainer, c = a.nodes.paragraph;
-          if (s)
+      new w({
+        key: n,
+        appendTransaction: (e, t, o) => {
+          const { doc: r, tr: i, schema: s } = o, a = n.getState(o), l = r.content.size - 2, d = s.nodes.blockContainer, c = s.nodes.paragraph;
+          if (a)
             return i.insert(
               l,
               d.create(void 0, c.create())
@@ -2616,119 +1847,915 @@ const uo = [
           apply: (e, t) => {
             if (!e.docChanged)
               return t;
-            let n = e.doc.lastChild;
-            if (!n || n.type.name !== "blockGroup")
+            let o = e.doc.lastChild;
+            if (!o || o.type.name !== "blockGroup")
               throw new Error("Expected blockGroup");
-            if (n = n.lastChild, !n || n.type.name !== "blockContainer")
+            if (o = o.lastChild, !o || o.type.name !== "blockContainer")
               throw new Error("Expected blockContainer");
-            return n.nodeSize > 4;
+            return o.nodeSize > 4;
           }
         }
       })
     ];
   }
-}), go = (o) => {
+}), Xe = (n) => {
+  var t;
   const e = [
-    N.ClipboardTextSerializer,
-    N.Commands,
-    N.Editable,
-    N.FocusEvents,
-    N.Tabindex,
+    L.ClipboardTextSerializer,
+    L.Commands,
+    L.Editable,
+    L.FocusEvents,
+    L.Tabindex,
     // DevTools,
-    te,
+    Kt,
     // DropCursor,
-    lo.configure({
-      emptyNodeClass: k.isEmpty,
-      hasAnchorClass: k.hasAnchor,
-      isFilterClass: k.isFilter,
+    qe.configure({
+      emptyNodeClass: y.isEmpty,
+      hasAnchorClass: y.hasAnchor,
+      isFilterClass: y.isFilter,
       includeChildren: !0,
       showOnlyCurrent: !1
     }),
-    K.configure({
+    F.configure({
       types: ["blockContainer"]
     }),
-    ee,
+    Jt,
     // Comments,
     // basics:
-    ie,
+    ee,
     // marks:
-    Kt,
-    Jt,
-    ne,
-    re,
-    se,
-    fo,
-    po,
-    Le,
-    Ne,
-    ho,
-    // custom blocks:
-    ...ze,
-    ...Object.values(o.blockSchema).map(
-      (t) => t.node.configure({ editor: o.editor })
+    $t,
+    jt,
+    Zt,
+    te,
+    oe,
+    Qt,
+    Ke,
+    Ye,
+    ge,
+    ke,
+    We,
+    // nodes
+    Re,
+    Oe.configure({
+      domAttributes: n.domAttributes
+    }),
+    De.configure({
+      domAttributes: n.domAttributes
+    }),
+    ...Object.values(n.blockSchema).map(
+      (o) => o.node.configure({
+        editor: n.editor,
+        domAttributes: n.domAttributes
+      })
     ),
-    $e,
-    Qt.configure({ width: 5, color: "#ddeeff" }),
+    ze,
+    Yt.configure({ width: 5, color: "#ddeeff" }),
     // This needs to be at the bottom of this list, because Key events (such as enter, when selecting a /command),
     // should be handled before Enter handlers in other components like splitListItem
-    mo
+    Je
   ];
-  if (o.collaboration) {
-    e.push(
-      Xt.configure({
-        fragment: o.collaboration.fragment
+  if (n.collaboration) {
+    if (e.push(
+      qt.configure({
+        fragment: n.collaboration.fragment
       })
-    );
-    const t = (n) => {
-      const r = document.createElement("span");
-      r.classList.add(_["collaboration-cursor__caret"]), r.setAttribute("style", `border-color: ${n.color}`);
-      const i = document.createElement("span");
-      i.classList.add(_["collaboration-cursor__label"]), i.setAttribute("style", `background-color: ${n.color}`), i.insertBefore(document.createTextNode(n.name), null);
-      const a = document.createTextNode("⁠"), s = document.createTextNode("⁠");
-      return r.insertBefore(a, null), r.insertBefore(i, null), r.insertBefore(s, null), r;
-    };
-    e.push(
-      Zt.configure({
-        user: o.collaboration.user,
-        render: o.collaboration.renderCursor || t,
-        provider: o.collaboration.provider
-      })
-    );
+    ), (t = n.collaboration.provider) != null && t.awareness) {
+      const o = (r) => {
+        const i = document.createElement("span");
+        i.classList.add(H["collaboration-cursor__caret"]), i.setAttribute("style", `border-color: ${r.color}`);
+        const s = document.createElement("span");
+        s.classList.add(H["collaboration-cursor__label"]), s.setAttribute("style", `background-color: ${r.color}`), s.insertBefore(document.createTextNode(r.name), null);
+        const a = document.createTextNode("⁠"), l = document.createTextNode("⁠");
+        return i.insertBefore(a, null), i.insertBefore(s, null), i.insertBefore(l, null), i;
+      };
+      e.push(
+        Wt.configure({
+          user: n.collaboration.user,
+          render: n.collaboration.renderCursor || o,
+          provider: n.collaboration.provider
+        })
+      );
+    }
   } else
-    e.push(oe);
-  return o.uiFactories.blockSideMenuFactory && e.push(
-    Qe().configure({
-      editor: o.editor,
-      blockSideMenuFactory: o.uiFactories.blockSideMenuFactory
+    e.push(Xt);
+  return e;
+};
+function Z(n, e) {
+  let t, o;
+  if (e.firstChild.descendants((r, i) => t ? !1 : r.type.name !== "blockContainer" || r.attrs.id !== n ? !0 : (t = r, o = i + 1, !1)), t === void 0 || o === void 0)
+    throw Error("Could not find block in the editor with matching ID.");
+  return {
+    node: t,
+    posBeforeNode: o
+  };
+}
+function xt(n, e, t = "before", o) {
+  const r = typeof e == "string" ? e : e.id, i = [];
+  for (const d of n)
+    i.push(D(d, o.schema));
+  let s = -1;
+  const { node: a, posBeforeNode: l } = Z(r, o.state.doc);
+  if (t === "before" && (s = l), t === "after" && (s = l + a.nodeSize), t === "nested") {
+    if (a.childCount < 2) {
+      s = l + a.firstChild.nodeSize + 1;
+      const d = o.state.schema.nodes.blockGroup.create(
+        {},
+        i
+      );
+      o.view.dispatch(
+        o.state.tr.insert(s, d)
+      );
+      return;
+    }
+    s = l + a.firstChild.nodeSize + 2;
+  }
+  o.view.dispatch(o.state.tr.insert(s, i));
+}
+function Ze(n, e, t) {
+  const o = typeof n == "string" ? n : n.id, { posBeforeNode: r } = Z(o, t.state.doc);
+  t.commands.BNUpdateBlock(r + 1, e);
+}
+function At(n, e) {
+  const t = new Set(
+    n.map(
+      (r) => typeof r == "string" ? r : r.id
+    )
+  );
+  let o = 0;
+  if (e.state.doc.descendants((r, i) => {
+    if (t.size === 0)
+      return !1;
+    if (r.type.name !== "blockContainer" || !t.has(r.attrs.id))
+      return !0;
+    t.delete(r.attrs.id);
+    const s = e.state.doc.nodeSize;
+    e.commands.BNDeleteBlock(i - o + 1);
+    const a = e.state.doc.nodeSize;
+    return o += s - a, !1;
+  }), t.size > 0) {
+    const r = [...t].join(`
+`);
+    throw Error(
+      "Blocks with the following IDs could not be found in the editor: " + r
+    );
+  }
+}
+function Qe(n, e, t) {
+  xt(e, n[0], "before", t), At(n, t);
+}
+function to() {
+  const n = (e) => {
+    let t = e.children.length;
+    for (let o = 0; o < t; o++) {
+      const r = e.children[o];
+      if (r.type === "element" && (n(r), r.tagName === "u"))
+        if (r.children.length > 0) {
+          e.children.splice(o, 1, ...r.children);
+          const i = r.children.length - 1;
+          t += i, o += i;
+        } else
+          e.children.splice(o, 1), t--, o--;
+    }
+  };
+  return n;
+}
+function eo(n) {
+  const e = /* @__PURE__ */ new Set([
+    ...n.orderedListItemBlockTypes,
+    ...n.unorderedListItemBlockTypes
+  ]), t = (o) => {
+    let r = o.children.length, i;
+    for (let s = 0; s < r; s++) {
+      const l = o.children[s].children[0], d = l.children[0], c = l.children.length === 2 ? l.children[1] : null, h = e.has(
+        d.properties.dataContentType
+      ), p = h ? n.orderedListItemBlockTypes.has(
+        d.properties.dataContentType
+      ) ? "ol" : "ul" : null;
+      if (c !== null && t(c), i && i.tagName !== p) {
+        o.children.splice(
+          s - i.children.length,
+          i.children.length,
+          i
+        );
+        const f = i.children.length - 1;
+        s -= f, r -= f, i = void 0;
+      }
+      if (h) {
+        i || (i = nt(
+          document.createElement(p)
+        ));
+        const f = nt(
+          document.createElement("li")
+        );
+        f.children.push(d.children[0]), c !== null && f.children.push(...c.children), i.children.push(f);
+      } else if (c !== null) {
+        o.children.splice(s + 1, 0, ...c.children), o.children[s] = d.children[0];
+        const f = c.children.length;
+        s += f, r += f;
+      } else
+        o.children[s] = d.children[0];
+    }
+    i && o.children.splice(
+      r - i.children.length,
+      i.children.length,
+      i
+    );
+  };
+  return t;
+}
+async function It(n, e) {
+  const t = document.createElement("div"), o = W.fromSchema(e);
+  for (const i of n) {
+    const s = D(i, e), a = o.serializeNode(s);
+    t.appendChild(a);
+  }
+  return (await J().use(dt, { fragment: !0 }).use(eo, {
+    orderedListItemBlockTypes: /* @__PURE__ */ new Set(["numberedListItem"]),
+    unorderedListItemBlockTypes: /* @__PURE__ */ new Set(["bulletListItem"])
+  }).use(ct).process(t.innerHTML)).value;
+}
+async function _t(n, e, t) {
+  const o = document.createElement("div");
+  o.innerHTML = n.trim();
+  const i = ne.fromSchema(t).parse(o), s = [];
+  for (let a = 0; a < i.firstChild.childCount; a++)
+    s.push(E(i.firstChild.child(a), e));
+  return s;
+}
+async function oo(n, e) {
+  return (await J().use(dt, { fragment: !0 }).use(to).use(ae).use(ut).use(ue).process(await It(n, e))).value;
+}
+function no(n, e) {
+  const t = e.value ? e.value + `
+` : "", o = {};
+  e.lang && (o["data-language"] = e.lang);
+  let r = {
+    type: "element",
+    tagName: "code",
+    properties: o,
+    children: [{ type: "text", value: t }]
+  };
+  return e.meta && (r.data = { meta: e.meta }), n.patch(e, r), r = n.applyData(e, r), r = {
+    type: "element",
+    tagName: "pre",
+    properties: {},
+    children: [r]
+  }, n.patch(e, r), r;
+}
+async function ro(n, e, t) {
+  const o = await J().use(le).use(ut).use(de, {
+    handlers: {
+      ...ce,
+      code: no
+    }
+  }).use(ct).process(n);
+  return _t(o.value, e, t);
+}
+class io {
+  constructor(e, t, o) {
+    u(this, "formattingToolbarState");
+    u(this, "updateFormattingToolbar");
+    u(this, "preventHide", !1);
+    u(this, "preventShow", !1);
+    u(this, "prevWasEditable", null);
+    u(this, "shouldShow", ({ view: e, state: t, from: o, to: r }) => {
+      const { doc: i, selection: s } = t, { empty: a } = s, l = !i.textBetween(o, r).length && Ut(t.selection);
+      return !(!e.hasFocus() || a || l);
+    });
+    u(this, "viewMousedownHandler", () => {
+      this.preventShow = !0;
+    });
+    u(this, "viewMouseupHandler", () => {
+      this.preventShow = !1, setTimeout(() => this.update(this.pmView));
+    });
+    // For dragging the whole editor.
+    u(this, "dragstartHandler", () => {
+      var e;
+      (e = this.formattingToolbarState) != null && e.show && (this.formattingToolbarState.show = !1, this.updateFormattingToolbar());
+    });
+    u(this, "focusHandler", () => {
+      setTimeout(() => this.update(this.pmView));
+    });
+    u(this, "blurHandler", (e) => {
+      var o;
+      if (this.preventHide) {
+        this.preventHide = !1;
+        return;
+      }
+      const t = this.pmView.dom.parentElement;
+      // An element is clicked.
+      e && e.relatedTarget && // Element is inside the editor.
+      (t === e.relatedTarget || t.contains(e.relatedTarget)) || (o = this.formattingToolbarState) != null && o.show && (this.formattingToolbarState.show = !1, this.updateFormattingToolbar());
+    });
+    u(this, "scrollHandler", () => {
+      var e;
+      (e = this.formattingToolbarState) != null && e.show && (this.formattingToolbarState.referencePos = this.getSelectionBoundingBox(), this.updateFormattingToolbar());
+    });
+    this.editor = e, this.pmView = t, this.updateFormattingToolbar = () => {
+      if (!this.formattingToolbarState)
+        throw new Error(
+          "Attempting to update uninitialized formatting toolbar"
+        );
+      o(this.formattingToolbarState);
+    }, t.dom.addEventListener("mousedown", this.viewMousedownHandler), t.dom.addEventListener("mouseup", this.viewMouseupHandler), t.dom.addEventListener("dragstart", this.dragstartHandler), t.dom.addEventListener("focus", this.focusHandler), t.dom.addEventListener("blur", this.blurHandler), document.addEventListener("scroll", this.scrollHandler);
+  }
+  update(e, t) {
+    var p, f;
+    const { state: o, composing: r } = e, { doc: i, selection: s } = o, a = t && t.doc.eq(i) && t.selection.eq(s);
+    if ((this.prevWasEditable === null || this.prevWasEditable === this.editor.isEditable) && (r || a))
+      return;
+    this.prevWasEditable = this.editor.isEditable;
+    const { ranges: l } = s, d = Math.min(...l.map((m) => m.$from.pos)), c = Math.max(...l.map((m) => m.$to.pos)), h = (p = this.shouldShow) == null ? void 0 : p.call(this, {
+      view: e,
+      state: o,
+      from: d,
+      to: c
+    });
+    if (this.editor.isEditable && !this.preventShow && (h || this.preventHide)) {
+      this.formattingToolbarState = {
+        show: !0,
+        referencePos: this.getSelectionBoundingBox()
+      }, this.updateFormattingToolbar();
+      return;
+    }
+    if ((f = this.formattingToolbarState) != null && f.show && !this.preventHide && (!h || this.preventShow || !this.editor.isEditable)) {
+      this.formattingToolbarState.show = !1, this.updateFormattingToolbar();
+      return;
+    }
+  }
+  destroy() {
+    this.pmView.dom.removeEventListener("mousedown", this.viewMousedownHandler), this.pmView.dom.removeEventListener("mouseup", this.viewMouseupHandler), this.pmView.dom.removeEventListener("dragstart", this.dragstartHandler), this.pmView.dom.removeEventListener("focus", this.focusHandler), this.pmView.dom.removeEventListener("blur", this.blurHandler), document.removeEventListener("scroll", this.scrollHandler);
+  }
+  getSelectionBoundingBox() {
+    const { state: e } = this.pmView, { selection: t } = e, { ranges: o } = t, r = Math.min(...o.map((s) => s.$from.pos)), i = Math.max(...o.map((s) => s.$to.pos));
+    if (Ft(t)) {
+      const s = this.pmView.nodeDOM(r);
+      if (s)
+        return s.getBoundingClientRect();
+    }
+    return q(this.pmView, r, i);
+  }
+}
+const so = new M(
+  "FormattingToolbarPlugin"
+);
+class ao extends G {
+  constructor(t) {
+    super();
+    u(this, "view");
+    u(this, "plugin");
+    this.plugin = new w({
+      key: so,
+      view: (o) => (this.view = new io(t, o, (r) => {
+        this.emit("update", r);
+      }), this.view)
+    });
+  }
+  onUpdate(t) {
+    return this.on("update", t);
+  }
+}
+class lo {
+  constructor(e, t, o) {
+    u(this, "hyperlinkToolbarState");
+    u(this, "updateHyperlinkToolbar");
+    u(this, "menuUpdateTimer");
+    u(this, "startMenuUpdateTimer");
+    u(this, "stopMenuUpdateTimer");
+    u(this, "mouseHoveredHyperlinkMark");
+    u(this, "mouseHoveredHyperlinkMarkRange");
+    u(this, "keyboardHoveredHyperlinkMark");
+    u(this, "keyboardHoveredHyperlinkMarkRange");
+    u(this, "hyperlinkMark");
+    u(this, "hyperlinkMarkRange");
+    u(this, "mouseOverHandler", (e) => {
+      if (this.mouseHoveredHyperlinkMark = void 0, this.mouseHoveredHyperlinkMarkRange = void 0, this.stopMenuUpdateTimer(), e.target instanceof HTMLAnchorElement && e.target.nodeName === "A") {
+        const t = e.target, o = this.pmView.posAtDOM(t, 0) + 1, r = this.pmView.state.doc.resolve(
+          o
+        ), i = r.marks();
+        for (const s of i)
+          if (s.type.name === this.pmView.state.schema.mark("link").type.name) {
+            this.mouseHoveredHyperlinkMark = s, this.mouseHoveredHyperlinkMarkRange = et(
+              r,
+              s.type,
+              s.attrs
+            ) || void 0;
+            break;
+          }
+      }
+      return this.startMenuUpdateTimer(), !1;
+    });
+    u(this, "clickHandler", (e) => {
+      var o;
+      const t = this.pmView.dom.parentElement;
+      // Toolbar is open.
+      this.hyperlinkMark && // An element is clicked.
+      e && e.target && // The clicked element is not the editor.
+      !(t === e.target || t.contains(e.target)) && (o = this.hyperlinkToolbarState) != null && o.show && (this.hyperlinkToolbarState.show = !1, this.updateHyperlinkToolbar());
+    });
+    u(this, "scrollHandler", () => {
+      var e;
+      this.hyperlinkMark !== void 0 && (e = this.hyperlinkToolbarState) != null && e.show && (this.hyperlinkToolbarState.referencePos = q(
+        this.pmView,
+        this.hyperlinkMarkRange.from,
+        this.hyperlinkMarkRange.to
+      ), this.updateHyperlinkToolbar());
+    });
+    this.editor = e, this.pmView = t, this.updateHyperlinkToolbar = () => {
+      if (!this.hyperlinkToolbarState)
+        throw new Error("Attempting to update uninitialized hyperlink toolbar");
+      o(this.hyperlinkToolbarState);
+    }, this.startMenuUpdateTimer = () => {
+      this.menuUpdateTimer = setTimeout(() => {
+        this.update();
+      }, 250);
+    }, this.stopMenuUpdateTimer = () => (this.menuUpdateTimer && (clearTimeout(this.menuUpdateTimer), this.menuUpdateTimer = void 0), !1), this.pmView.dom.addEventListener("mouseover", this.mouseOverHandler), document.addEventListener("click", this.clickHandler, !0), document.addEventListener("scroll", this.scrollHandler);
+  }
+  editHyperlink(e, t) {
+    var r;
+    const o = this.pmView.state.tr.insertText(
+      t,
+      this.hyperlinkMarkRange.from,
+      this.hyperlinkMarkRange.to
+    );
+    o.addMark(
+      this.hyperlinkMarkRange.from,
+      this.hyperlinkMarkRange.from + t.length,
+      this.pmView.state.schema.mark("link", { href: e })
+    ), this.pmView.dispatch(o), this.pmView.focus(), (r = this.hyperlinkToolbarState) != null && r.show && (this.hyperlinkToolbarState.show = !1, this.updateHyperlinkToolbar());
+  }
+  deleteHyperlink() {
+    var e;
+    this.pmView.dispatch(
+      this.pmView.state.tr.removeMark(
+        this.hyperlinkMarkRange.from,
+        this.hyperlinkMarkRange.to,
+        this.hyperlinkMark.type
+      ).setMeta("preventAutolink", !0)
+    ), this.pmView.focus(), (e = this.hyperlinkToolbarState) != null && e.show && (this.hyperlinkToolbarState.show = !1, this.updateHyperlinkToolbar());
+  }
+  update() {
+    var t;
+    if (!this.pmView.hasFocus())
+      return;
+    const e = this.hyperlinkMark;
+    if (this.hyperlinkMark = void 0, this.hyperlinkMarkRange = void 0, this.keyboardHoveredHyperlinkMark = void 0, this.keyboardHoveredHyperlinkMarkRange = void 0, this.pmView.state.selection.empty) {
+      const o = this.pmView.state.selection.$from.marks();
+      for (const r of o)
+        if (r.type.name === this.pmView.state.schema.mark("link").type.name) {
+          this.keyboardHoveredHyperlinkMark = r, this.keyboardHoveredHyperlinkMarkRange = et(
+            this.pmView.state.selection.$from,
+            r.type,
+            r.attrs
+          ) || void 0;
+          break;
+        }
+    }
+    if (this.mouseHoveredHyperlinkMark && (this.hyperlinkMark = this.mouseHoveredHyperlinkMark, this.hyperlinkMarkRange = this.mouseHoveredHyperlinkMarkRange), this.keyboardHoveredHyperlinkMark && (this.hyperlinkMark = this.keyboardHoveredHyperlinkMark, this.hyperlinkMarkRange = this.keyboardHoveredHyperlinkMarkRange), this.hyperlinkMark && this.editor.isEditable) {
+      this.hyperlinkToolbarState = {
+        show: !0,
+        referencePos: q(
+          this.pmView,
+          this.hyperlinkMarkRange.from,
+          this.hyperlinkMarkRange.to
+        ),
+        url: this.hyperlinkMark.attrs.href,
+        text: this.pmView.state.doc.textBetween(
+          this.hyperlinkMarkRange.from,
+          this.hyperlinkMarkRange.to
+        )
+      }, this.updateHyperlinkToolbar();
+      return;
+    }
+    if ((t = this.hyperlinkToolbarState) != null && t.show && e && (!this.hyperlinkMark || !this.editor.isEditable)) {
+      this.hyperlinkToolbarState.show = !1, this.updateHyperlinkToolbar();
+      return;
+    }
+  }
+  destroy() {
+    this.pmView.dom.removeEventListener("mouseover", this.mouseOverHandler), document.removeEventListener("scroll", this.scrollHandler), document.removeEventListener("click", this.clickHandler, !0);
+  }
+}
+const co = new M(
+  "HyperlinkToolbarPlugin"
+);
+class uo extends G {
+  constructor(t) {
+    super();
+    u(this, "view");
+    u(this, "plugin");
+    /**
+     * Edit the currently hovered hyperlink.
+     */
+    u(this, "editHyperlink", (t, o) => {
+      this.view.editHyperlink(t, o);
+    });
+    /**
+     * Delete the currently hovered hyperlink.
+     */
+    u(this, "deleteHyperlink", () => {
+      this.view.deleteHyperlink();
+    });
+    /**
+     * When hovering on/off hyperlinks using the mouse cursor, the hyperlink
+     * toolbar will open & close with a delay.
+     *
+     * This function starts the delay timer, and should be used for when the mouse cursor enters the hyperlink toolbar.
+     */
+    u(this, "startHideTimer", () => {
+      this.view.startMenuUpdateTimer();
+    });
+    /**
+     * When hovering on/off hyperlinks using the mouse cursor, the hyperlink
+     * toolbar will open & close with a delay.
+     *
+     * This function stops the delay timer, and should be used for when the mouse cursor exits the hyperlink toolbar.
+     */
+    u(this, "stopHideTimer", () => {
+      this.view.stopMenuUpdateTimer();
+    });
+    this.plugin = new w({
+      key: co,
+      view: (o) => (this.view = new lo(t, o, (r) => {
+        this.emit("update", r);
+      }), this.view)
+    });
+  }
+  onUpdate(t) {
+    return this.on("update", t);
+  }
+}
+class N extends j {
+  constructor(t, o) {
+    super(t, o);
+    u(this, "nodes");
+    const r = t.node();
+    this.nodes = [], t.doc.nodesBetween(t.pos, o.pos, (i, s, a) => {
+      if (a !== null && a.eq(r))
+        return this.nodes.push(i), !1;
+    });
+  }
+  static create(t, o, r = o) {
+    return new N(t.resolve(o), t.resolve(r));
+  }
+  content() {
+    return new x(_.from(this.nodes), 0, 0);
+  }
+  eq(t) {
+    if (!(t instanceof N) || this.nodes.length !== t.nodes.length || this.from !== t.from || this.to !== t.to)
+      return !1;
+    for (let o = 0; o < this.nodes.length; o++)
+      if (!this.nodes[o].eq(t.nodes[o]))
+        return !1;
+    return !0;
+  }
+  map(t, o) {
+    const r = o.mapResult(this.from), i = o.mapResult(this.to);
+    return i.deleted ? j.near(t.resolve(r.pos)) : r.deleted ? j.near(t.resolve(i.pos)) : new N(
+      t.resolve(r.pos),
+      t.resolve(i.pos)
+    );
+  }
+  toJSON() {
+    return { type: "node", anchor: this.anchor, head: this.head };
+  }
+}
+const po = se.__serializeForClipboard;
+let B;
+function Ht(n, e) {
+  var r;
+  if (!e.dom.isConnected)
+    return;
+  const t = e.posAtCoords(n);
+  if (!t)
+    return;
+  let o = e.domAtPos(t.pos).node;
+  if (o !== e.dom) {
+    for (; o && o.parentNode && o.parentNode !== e.dom && !((r = o.hasAttribute) != null && r.call(o, "data-id")); )
+      o = o.parentNode;
+    if (o)
+      return { node: o, id: o.getAttribute("data-id") };
+  }
+}
+function ho(n, e) {
+  const t = Ht(n, e);
+  if (t && t.node.nodeType === 1) {
+    const o = e.docView, r = o.nearestDesc(t.node, !0);
+    return !r || r === o ? null : r.posBefore;
+  }
+  return null;
+}
+function fo(n, e) {
+  let t, o;
+  const r = e.resolve(n.from).node().type.spec.group === "blockContent", i = e.resolve(n.to).node().type.spec.group === "blockContent", s = Math.min(n.$anchor.depth, n.$head.depth);
+  if (r && i) {
+    const a = n.$from.start(s - 1), l = n.$to.end(s - 1);
+    t = e.resolve(a - 1).pos, o = e.resolve(l + 1).pos;
+  } else
+    t = n.from, o = n.to;
+  return { from: t, to: o };
+}
+function at(n, e, t = e) {
+  e === t && (t += n.state.doc.resolve(e + 1).node().nodeSize);
+  const o = n.domAtPos(e).node.cloneNode(!0), r = n.domAtPos(e).node, i = (c, h) => Array.prototype.indexOf.call(c.children, h), s = i(
+    r,
+    // Expects from position to be just before the first selected block.
+    n.domAtPos(e + 1).node.parentElement
+  ), a = i(
+    r,
+    // Expects to position to be just after the last selected block.
+    n.domAtPos(t - 1).node.parentElement
+  );
+  for (let c = r.childElementCount - 1; c >= 0; c--)
+    (c > a || c < s) && o.removeChild(o.children[c]);
+  Nt(), B = o;
+  const d = n.dom.className.split(" ").filter(
+    (c) => !c.includes("bn") && !c.includes("ProseMirror") && !c.includes("editor")
+  ).join(" ");
+  B.className = B.className + " " + H.dragPreview + " " + d, document.body.appendChild(B);
+}
+function Nt() {
+  B !== void 0 && (document.body.removeChild(B), B = void 0);
+}
+function mo(n, e) {
+  if (!n.dataTransfer)
+    return;
+  const t = e.dom.getBoundingClientRect(), o = {
+    left: t.left + t.width / 2,
+    // take middle of editor
+    top: n.clientY
+  }, r = ho(o, e);
+  if (r != null) {
+    const i = e.state.selection, s = e.state.doc, { from: a, to: l } = fo(i, s), d = a <= r && r < l, c = i.$anchor.node() !== i.$head.node() || i instanceof N;
+    d && c ? (e.dispatch(
+      e.state.tr.setSelection(N.create(s, a, l))
+    ), at(e, a, l)) : (e.dispatch(
+      e.state.tr.setSelection(re.create(e.state.doc, r))
+    ), at(e, r));
+    const h = e.state.selection.content(), { dom: p, text: f } = po(e, h);
+    n.dataTransfer.clearData(), n.dataTransfer.setData("text/html", p.innerHTML), n.dataTransfer.setData("text/plain", f), n.dataTransfer.effectAllowed = "move", n.dataTransfer.setDragImage(B, 0, 0), e.dragging = { slice: h, move: !0 };
+  }
+}
+class ko {
+  constructor(e, t, o) {
+    u(this, "sideMenuState");
+    // When true, the drag handle with be anchored at the same level as root elements
+    // When false, the drag handle with be just to the left of the element
+    // TODO: Is there any case where we want this to be false?
+    u(this, "horizontalPosAnchoredAtRoot");
+    u(this, "horizontalPosAnchor");
+    u(this, "hoveredBlock");
+    // Used to check if currently dragged content comes from this editor instance.
+    u(this, "isDragging", !1);
+    u(this, "menuFrozen", !1);
+    /**
+     * Sets isDragging when dragging text.
+     */
+    u(this, "onDragStart", () => {
+      this.isDragging = !0;
+    });
+    /**
+     * If the event is outside the editor contents,
+     * we dispatch a fake event, so that we can still drop the content
+     * when dragging / dropping to the side of the editor
+     */
+    u(this, "onDrop", (e) => {
+      if (this.editor._tiptapEditor.commands.blur(), e.synthetic || !this.isDragging)
+        return;
+      const t = this.pmView.posAtCoords({
+        left: e.clientX,
+        top: e.clientY
+      });
+      if (this.isDragging = !1, !t || t.inside === -1) {
+        const o = new Event("drop", e), r = this.pmView.dom.firstChild.getBoundingClientRect();
+        o.clientX = r.left + r.width / 2, o.clientY = e.clientY, o.dataTransfer = e.dataTransfer, o.preventDefault = () => e.preventDefault(), o.synthetic = !0, this.pmView.dom.dispatchEvent(o);
+      }
+    });
+    /**
+     * If the event is outside the editor contents,
+     * we dispatch a fake event, so that we can still drop the content
+     * when dragging / dropping to the side of the editor
+     */
+    u(this, "onDragOver", (e) => {
+      if (e.synthetic || !this.isDragging)
+        return;
+      const t = this.pmView.posAtCoords({
+        left: e.clientX,
+        top: e.clientY
+      });
+      if (!t || t.inside === -1) {
+        const o = new Event("dragover", e), r = this.pmView.dom.firstChild.getBoundingClientRect();
+        o.clientX = r.left + r.width / 2, o.clientY = e.clientY, o.dataTransfer = e.dataTransfer, o.preventDefault = () => e.preventDefault(), o.synthetic = !0, this.pmView.dom.dispatchEvent(o);
+      }
+    });
+    u(this, "onKeyDown", (e) => {
+      var t;
+      (t = this.sideMenuState) != null && t.show && (this.sideMenuState.show = !1, this.updateSideMenu(this.sideMenuState)), this.menuFrozen = !1;
+    });
+    u(this, "onMouseMove", (e) => {
+      var d, c, h, p, f;
+      if (this.menuFrozen)
+        return;
+      const t = this.pmView.dom.firstChild.getBoundingClientRect(), o = this.pmView.dom.getBoundingClientRect(), r = e.clientX >= o.left && e.clientX <= o.right && e.clientY >= o.top && e.clientY <= o.bottom, i = this.pmView.dom.parentElement;
+      if (
+        // Cursor is within the editor area
+        r && // An element is hovered
+        e && e.target && // Element is outside the editor
+        !(i === e.target || i.contains(e.target))
+      ) {
+        (d = this.sideMenuState) != null && d.show && (this.sideMenuState.show = !1, this.updateSideMenu(this.sideMenuState));
+        return;
+      }
+      this.horizontalPosAnchor = t.x;
+      const s = {
+        left: t.left + t.width / 2,
+        // take middle of editor
+        top: e.clientY
+      }, a = Ht(s, this.pmView);
+      if (!a || !this.editor.isEditable) {
+        (c = this.sideMenuState) != null && c.show && (this.sideMenuState.show = !1, this.updateSideMenu(this.sideMenuState));
+        return;
+      }
+      if ((h = this.sideMenuState) != null && h.show && ((p = this.hoveredBlock) != null && p.hasAttribute("data-id")) && ((f = this.hoveredBlock) == null ? void 0 : f.getAttribute("data-id")) === a.id)
+        return;
+      this.hoveredBlock = a.node;
+      const l = a.node.firstChild;
+      if (l && this.editor.isEditable) {
+        const m = l.getBoundingClientRect();
+        this.sideMenuState = {
+          show: !0,
+          referencePos: new DOMRect(
+            this.horizontalPosAnchoredAtRoot ? this.horizontalPosAnchor : m.x,
+            m.y,
+            m.width,
+            m.height
+          ),
+          block: this.editor.getBlock(
+            this.hoveredBlock.getAttribute("data-id")
+          )
+        }, this.updateSideMenu(this.sideMenuState);
+      }
+    });
+    u(this, "onScroll", () => {
+      var e;
+      if ((e = this.sideMenuState) != null && e.show) {
+        const o = this.hoveredBlock.firstChild.getBoundingClientRect();
+        this.sideMenuState.referencePos = new DOMRect(
+          this.horizontalPosAnchoredAtRoot ? this.horizontalPosAnchor : o.x,
+          o.y,
+          o.width,
+          o.height
+        ), this.updateSideMenu(this.sideMenuState);
+      }
+    });
+    this.editor = e, this.pmView = t, this.updateSideMenu = o, this.horizontalPosAnchoredAtRoot = !0, this.horizontalPosAnchor = this.pmView.dom.firstChild.getBoundingClientRect().x, document.body.addEventListener("drop", this.onDrop, !0), document.body.addEventListener("dragover", this.onDragOver), this.pmView.dom.addEventListener("dragstart", this.onDragStart), document.body.addEventListener("mousemove", this.onMouseMove, !0), document.addEventListener("scroll", this.onScroll), document.body.addEventListener("keydown", this.onKeyDown, !0);
+  }
+  destroy() {
+    var e;
+    (e = this.sideMenuState) != null && e.show && (this.sideMenuState.show = !1, this.updateSideMenu(this.sideMenuState)), document.body.removeEventListener("mousemove", this.onMouseMove), document.body.removeEventListener("dragover", this.onDragOver), this.pmView.dom.removeEventListener("dragstart", this.onDragStart), document.body.removeEventListener("drop", this.onDrop, !0), document.removeEventListener("scroll", this.onScroll), document.body.removeEventListener("keydown", this.onKeyDown, !0);
+  }
+  addBlock() {
+    var a;
+    (a = this.sideMenuState) != null && a.show && (this.sideMenuState.show = !1, this.updateSideMenu(this.sideMenuState)), this.menuFrozen = !0;
+    const t = this.hoveredBlock.firstChild.getBoundingClientRect(), o = this.pmView.posAtCoords({
+      left: t.left + t.width / 2,
+      top: t.top + t.height / 2
+    });
+    if (!o)
+      return;
+    const r = k(
+      this.editor._tiptapEditor.state.doc,
+      o.pos
+    );
+    if (r === void 0)
+      return;
+    const { contentNode: i, endPos: s } = r;
+    if (i.textContent.length !== 0) {
+      const l = s + 1, d = l + 2;
+      this.editor._tiptapEditor.chain().BNCreateBlock(l).BNUpdateBlock(d, { type: "paragraph", props: {} }).setTextSelection(d).run();
+    } else
+      this.editor._tiptapEditor.commands.setTextSelection(s);
+    this.pmView.focus(), this.pmView.dispatch(
+      this.pmView.state.tr.scrollIntoView().setMeta(X, {
+        // TODO import suggestion plugin key
+        activate: !0,
+        type: "drag"
+      })
+    );
+  }
+}
+const go = new M("SideMenuPlugin");
+class bo extends G {
+  constructor(t) {
+    super();
+    u(this, "sideMenuView");
+    u(this, "plugin");
+    /**
+     * If the block is empty, opens the slash menu. If the block has content,
+     * creates a new block below and opens the slash menu in it.
+     */
+    u(this, "addBlock", () => this.sideMenuView.addBlock());
+    /**
+     * Handles drag & drop events for blocks.
+     */
+    u(this, "blockDragStart", (t) => {
+      this.sideMenuView.isDragging = !0, mo(t, this.editor.prosemirrorView);
+    });
+    /**
+     * Handles drag & drop events for blocks.
+     */
+    u(this, "blockDragEnd", () => Nt());
+    /**
+     * Freezes the side menu. When frozen, the side menu will stay
+     * attached to the same block regardless of which block is hovered by the
+     * mouse cursor.
+     */
+    u(this, "freezeMenu", () => this.sideMenuView.menuFrozen = !0);
+    /**
+     * Unfreezes the side menu. When frozen, the side menu will stay
+     * attached to the same block regardless of which block is hovered by the
+     * mouse cursor.
+     */
+    u(this, "unfreezeMenu", () => this.sideMenuView.menuFrozen = !1);
+    this.editor = t, this.plugin = new w({
+      key: go,
+      view: (o) => (this.sideMenuView = new ko(
+        t,
+        o,
+        (r) => {
+          this.emit("update", r);
+        }
+      ), this.sideMenuView)
+    });
+  }
+  onUpdate(t) {
+    return this.on("update", t);
+  }
+}
+function I(n, e) {
+  const t = n.getTextCursorPosition().block;
+  t.content.length === 1 && t.content[0].type === "text" && t.content[0].text === "/" || t.content.length === 0 ? n.updateBlock(t, e) : (n.insertBlocks([e], t, "after"), n.setTextCursorPosition(n.getTextCursorPosition().nextBlock));
+}
+const yo = (n = Mt) => {
+  var t, o, r;
+  const e = [];
+  return "heading" in n && "level" in n.heading.propSchema && ((t = n.heading.propSchema.level.values) != null && t.includes("1") && e.push({
+    name: "Heading",
+    aliases: ["h", "heading1", "h1"],
+    execute: (i) => I(i, {
+      type: "heading",
+      props: { level: "1" }
     })
-  ), o.uiFactories.formattingToolbarFactory && e.push(
-    oo().configure({
-      editor: o.editor,
-      formattingToolbarFactory: o.uiFactories.formattingToolbarFactory
+  }), (o = n.heading.propSchema.level.values) != null && o.includes("2") && e.push({
+    name: "Heading 2",
+    aliases: ["h2", "heading2", "subheading"],
+    execute: (i) => I(i, {
+      type: "heading",
+      props: { level: "2" }
     })
-  ), o.uiFactories.hyperlinkToolbarFactory ? e.push(
-    so.configure({
-      hyperlinkToolbarFactory: o.uiFactories.hyperlinkToolbarFactory
+  }), (r = n.heading.propSchema.level.values) != null && r.includes("3") && e.push({
+    name: "Heading 3",
+    aliases: ["h3", "heading3", "subheading"],
+    execute: (i) => I(i, {
+      type: "heading",
+      props: { level: "3" }
     })
-  ) : e.push(ut), o.uiFactories.slashMenuFactory && e.push(
-    We().configure({
-      editor: o.editor,
-      commands: o.slashCommands,
-      slashMenuFactory: o.uiFactories.slashMenuFactory
+  })), "bulletListItem" in n && e.push({
+    name: "Bullet List",
+    aliases: ["ul", "list", "bulletlist", "bullet list"],
+    execute: (i) => I(i, {
+      type: "bulletListItem"
     })
-  ), e;
-}, ko = {
+  }), "numberedListItem" in n && e.push({
+    name: "Numbered List",
+    aliases: ["li", "list", "numberedlist", "numbered list"],
+    execute: (i) => I(i, {
+      type: "numberedListItem"
+    })
+  }), "paragraph" in n && e.push({
+    name: "Paragraph",
+    aliases: ["p"],
+    execute: (i) => I(i, {
+      type: "paragraph"
+    })
+  }), e;
+}, vo = {
   enableInputRules: !0,
   enablePasteRules: !0,
   enableCoreExtensions: !1
 };
-class Ko {
+class Qo {
   constructor(e = {}) {
-    h(this, "_tiptapEditor");
-    h(this, "blockCache", /* @__PURE__ */ new WeakMap());
-    h(this, "schema");
-    h(this, "ready", !1);
-    var i, a, s;
+    u(this, "_tiptapEditor");
+    u(this, "blockCache", /* @__PURE__ */ new WeakMap());
+    u(this, "schema");
+    u(this, "ready", !1);
+    u(this, "sideMenu");
+    u(this, "formattingToolbar");
+    u(this, "slashMenu");
+    u(this, "hyperlinkToolbar");
+    var a, l, d, c, h;
     this.options = e;
     const t = {
       defaultStyles: !0,
@@ -2737,54 +2764,76 @@ class Ko {
       //  If BSchema is not specified, then options.blockSchema should also not
       //  be defined. Unfortunately, trying to implement these constraints seems
       //  to be a huge pain, hence the `as any` casts.
-      blockSchema: e.blockSchema || ke,
+      blockSchema: e.blockSchema || Mt,
       ...e
-    }, n = go({
+    };
+    this.sideMenu = new bo(this), this.formattingToolbar = new ao(this), this.slashMenu = new $e(
+      this,
+      t.slashMenuItems || yo(t.blockSchema)
+    ), this.hyperlinkToolbar = new uo(this);
+    const o = Xe({
       editor: this,
-      uiFactories: t.uiFactories || {},
-      slashCommands: t.slashCommands || uo,
+      domAttributes: t.domAttributes || {},
       blockSchema: t.blockSchema,
       collaboration: t.collaboration
+    }), r = T.create({
+      name: "BlockNoteUIExtension",
+      addProseMirrorPlugins: () => [
+        this.sideMenu.plugin,
+        this.formattingToolbar.plugin,
+        this.slashMenu.plugin,
+        this.hyperlinkToolbar.plugin
+      ]
     });
-    this.schema = t.blockSchema;
-    const r = {
-      // TODO: This approach to setting initial content is "cleaner" but requires the PM editor schema, which is only
-      //  created after initializing the TipTap editor. Not sure it's feasible.
-      // content:
-      //   options.initialContent &&
-      //   options.initialContent.map((block) =>
-      //     blockToNode(block, this._tiptapEditor.schema).toJSON()
-      //   ),
-      ...ko,
+    o.push(r), this.schema = t.blockSchema;
+    const i = t.initialContent || (e.collaboration ? void 0 : [
+      {
+        type: "paragraph",
+        id: F.options.generateID()
+      }
+    ]), s = {
+      ...vo,
       ...t._tiptapOptions,
       onCreate: () => {
-        var l;
-        (l = t.onEditorReady) == null || l.call(t, this), t.initialContent && this.replaceBlocks(this.topLevelBlocks, t.initialContent), this.ready = !0;
+        var p;
+        (p = t.onEditorReady) == null || p.call(t, this), this.ready = !0;
+      },
+      onBeforeCreate(p) {
+        if (!i)
+          return;
+        const f = p.editor.schema, m = i.map((b) => D(b, f)), g = f.node(
+          "doc",
+          void 0,
+          f.node("blockGroup", void 0, m)
+        );
+        p.editor.options.content = g.toJSON();
       },
       onUpdate: () => {
-        var l;
-        this.ready && ((l = t.onEditorContentChange) == null || l.call(t, this));
+        var p;
+        this.ready && ((p = t.onEditorContentChange) == null || p.call(t, this));
       },
       onSelectionUpdate: () => {
-        var l;
-        this.ready && ((l = t.onTextCursorPositionChange) == null || l.call(t, this));
+        var p;
+        this.ready && ((p = t.onTextCursorPositionChange) == null || p.call(t, this));
       },
       editable: e.editable === void 0 ? !0 : e.editable,
-      extensions: t.enableBlockNoteExtensions === !1 ? (i = t._tiptapOptions) == null ? void 0 : i.extensions : [...((a = t._tiptapOptions) == null ? void 0 : a.extensions) || [], ...n],
+      extensions: t.enableBlockNoteExtensions === !1 ? (a = t._tiptapOptions) == null ? void 0 : a.extensions : [...((l = t._tiptapOptions) == null ? void 0 : l.extensions) || [], ...o],
       editorProps: {
         attributes: {
-          "data-theme": e.theme || "light",
-          ...t.editorDOMAttributes || {},
-          class: [
-            _.bnEditor,
-            _.bnRoot,
-            t.defaultStyles ? _.defaultStyles : "",
-            ((s = t.editorDOMAttributes) == null ? void 0 : s.class) || ""
-          ].join(" ")
+          ...(d = t.domAttributes) == null ? void 0 : d.editor,
+          class: v(
+            H.bnEditor,
+            H.bnRoot,
+            t.defaultStyles ? H.defaultStyles : "",
+            ((h = (c = t.domAttributes) == null ? void 0 : c.editor) == null ? void 0 : h.class) || ""
+          )
         }
       }
     };
-    t.parentElement && (r.element = t.parentElement), this._tiptapEditor = new Ut(r);
+    t.parentElement && (s.element = t.parentElement), this._tiptapEditor = new Gt(s);
+  }
+  get prosemirrorView() {
+    return this._tiptapEditor.view;
   }
   get domElement() {
     return this._tiptapEditor.view.dom;
@@ -2801,7 +2850,7 @@ class Ko {
    */
   get topLevelBlocks() {
     const e = [];
-    return this._tiptapEditor.state.doc.firstChild.descendants((t) => (e.push(M(t, this.schema, this.blockCache)), !1)), e;
+    return this._tiptapEditor.state.doc.firstChild.descendants((t) => (e.push(E(t, this.schema, this.blockCache)), !1)), e;
   }
   /**
    * Gets a snapshot of an existing block from the editor.
@@ -2810,8 +2859,8 @@ class Ko {
    */
   getBlock(e) {
     const t = typeof e == "string" ? e : e.id;
-    let n;
-    return this._tiptapEditor.state.doc.firstChild.descendants((r) => typeof n < "u" ? !1 : r.type.name !== "blockContainer" || r.attrs.id !== t ? !0 : (n = M(r, this.schema, this.blockCache), !1)), n;
+    let o;
+    return this._tiptapEditor.state.doc.firstChild.descendants((r) => typeof o < "u" ? !1 : r.type.name !== "blockContainer" || r.attrs.id !== t ? !0 : (o = E(r, this.schema, this.blockCache), !1)), o;
   }
   /**
    * Traverses all blocks in the editor depth-first, and executes a callback for each.
@@ -2819,19 +2868,19 @@ class Ko {
    * @param reverse Whether the blocks should be traversed in reverse order.
    */
   forEachBlock(e, t = !1) {
-    const n = this.topLevelBlocks.slice();
-    t && n.reverse();
+    const o = this.topLevelBlocks.slice();
+    t && o.reverse();
     function r(i) {
-      for (const a of i) {
-        if (!e(a))
+      for (const s of i) {
+        if (!e(s))
           return !1;
-        const s = t ? a.children.slice().reverse() : a.children;
-        if (!r(s))
+        const a = t ? s.children.slice().reverse() : s.children;
+        if (!r(a))
           return !1;
       }
       return !0;
     }
-    r(n);
+    r(o);
   }
   /**
    * Executes a callback whenever the editor's contents change.
@@ -2841,21 +2890,28 @@ class Ko {
     this._tiptapEditor.on("update", e);
   }
   /**
+   * Executes a callback whenever the editor's selection changes.
+   * @param callback The callback to execute.
+   */
+  onEditorSelectionChange(e) {
+    this._tiptapEditor.on("selectionUpdate", e);
+  }
+  /**
    * Gets a snapshot of the current text cursor position.
    * @returns A snapshot of the current text cursor position.
    */
   getTextCursorPosition() {
-    const { node: e, depth: t, startPos: n, endPos: r } = g(
+    const { node: e, depth: t, startPos: o, endPos: r } = k(
       this._tiptapEditor.state.doc,
       this._tiptapEditor.state.selection.from
-    ), i = this._tiptapEditor.state.doc.resolve(r).index(t - 1), a = this._tiptapEditor.state.doc.resolve(r + 1).node().childCount;
-    let s;
-    i > 0 && (s = this._tiptapEditor.state.doc.resolve(n - 2).node());
+    ), i = this._tiptapEditor.state.doc.resolve(r).index(t - 1), s = this._tiptapEditor.state.doc.resolve(r + 1).node().childCount;
+    let a;
+    i > 0 && (a = this._tiptapEditor.state.doc.resolve(o - 2).node());
     let l;
-    return i < a - 1 && (l = this._tiptapEditor.state.doc.resolve(r + 2).node()), {
-      block: M(e, this.schema, this.blockCache),
-      prevBlock: s === void 0 ? void 0 : M(s, this.schema, this.blockCache),
-      nextBlock: l === void 0 ? void 0 : M(l, this.schema, this.blockCache)
+    return i < s - 1 && (l = this._tiptapEditor.state.doc.resolve(r + 2).node()), {
+      block: E(e, this.schema, this.blockCache),
+      prevBlock: a === void 0 ? void 0 : E(a, this.schema, this.blockCache),
+      nextBlock: l === void 0 ? void 0 : E(l, this.schema, this.blockCache)
     };
   }
   /**
@@ -2865,12 +2921,12 @@ class Ko {
    * @param placement Whether the text cursor should be placed at the start or end of the block.
    */
   setTextCursorPosition(e, t = "start") {
-    const n = typeof e == "string" ? e : e.id, { posBeforeNode: r } = J(n, this._tiptapEditor.state.doc), { startPos: i, contentNode: a } = g(
+    const o = typeof e == "string" ? e : e.id, { posBeforeNode: r } = Z(o, this._tiptapEditor.state.doc), { startPos: i, contentNode: s } = k(
       this._tiptapEditor.state.doc,
       r + 2
     );
     t === "start" ? this._tiptapEditor.commands.setTextSelection(i + 1) : this._tiptapEditor.commands.setTextSelection(
-      i + a.nodeSize - 1
+      i + s.nodeSize - 1
     );
   }
   /**
@@ -2880,9 +2936,9 @@ class Ko {
     if (this._tiptapEditor.state.selection.from === this._tiptapEditor.state.selection.to)
       return;
     const e = [];
-    return this._tiptapEditor.state.doc.descendants((t, n) => t.type.spec.group !== "blockContent" || n + t.nodeSize < this._tiptapEditor.state.selection.from || n > this._tiptapEditor.state.selection.to ? !0 : (e.push(
-      M(
-        this._tiptapEditor.state.doc.resolve(n).node(),
+    return this._tiptapEditor.state.doc.descendants((t, o) => t.type.spec.group !== "blockContent" || o + t.nodeSize < this._tiptapEditor.state.selection.from || o > this._tiptapEditor.state.selection.to ? !0 : (e.push(
+      E(
+        this._tiptapEditor.state.doc.resolve(o).node(),
         this.schema,
         this.blockCache
       )
@@ -2910,8 +2966,8 @@ class Ko {
    * @param placement Whether the blocks should be inserted just before, just after, or nested inside the
    * `referenceBlock`. Inserts the blocks at the start of the existing block's children if "nested" is used.
    */
-  insertBlocks(e, t, n = "before") {
-    Tt(e, t, n, this._tiptapEditor);
+  insertBlocks(e, t, o = "before") {
+    xt(e, t, o, this._tiptapEditor);
   }
   /**
    * Updates an existing block in the editor. Since updatedBlock is a PartialBlock object, some fields might not be
@@ -2921,14 +2977,14 @@ class Ko {
    * @param update A partial block which defines how the existing block should be changed.
    */
   updateBlock(e, t) {
-    Be(e, t, this._tiptapEditor);
+    Ze(e, t, this._tiptapEditor);
   }
   /**
    * Removes existing blocks from the editor. Throws an error if any of the blocks could not be found.
    * @param blocksToRemove An array of identifiers for existing blocks that should be removed.
    */
   removeBlocks(e) {
-    xt(e, this._tiptapEditor);
+    At(e, this._tiptapEditor);
   }
   /**
    * Replaces existing blocks in the editor with new blocks. If the blocks that should be removed are not adjacent or
@@ -2938,13 +2994,13 @@ class Ko {
    * @param blocksToInsert An array of partial blocks to replace the old ones with.
    */
   replaceBlocks(e, t) {
-    Me(e, t, this._tiptapEditor);
+    Qe(e, t, this._tiptapEditor);
   }
   /**
    * Gets the active text styles at the text cursor position or at the end of the current selection if it's active.
    */
   getActiveStyles() {
-    const e = {}, t = this._tiptapEditor.state.selection.$to.marks(), n = /* @__PURE__ */ new Set([
+    const e = {}, t = this._tiptapEditor.state.selection.$to.marks(), o = /* @__PURE__ */ new Set([
       "bold",
       "italic",
       "underline",
@@ -2952,7 +3008,7 @@ class Ko {
       "code"
     ]), r = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
     for (const i of t)
-      n.has(i.type.name) ? e[i.type.name] = !0 : r.has(i.type.name) && (e[i.type.name] = i.attrs.color);
+      o.has(i.type.name) ? e[i.type.name] = !0 : r.has(i.type.name) && (e[i.type.name] = i.attrs.color);
     return e;
   }
   /**
@@ -2966,10 +3022,10 @@ class Ko {
       "underline",
       "strike",
       "code"
-    ]), n = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
+    ]), o = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
     this._tiptapEditor.view.focus();
     for (const [r, i] of Object.entries(e))
-      t.has(r) ? this._tiptapEditor.commands.setMark(r) : n.has(r) && this._tiptapEditor.commands.setMark(r, { color: i });
+      t.has(r) ? this._tiptapEditor.commands.setMark(r) : o.has(r) && this._tiptapEditor.commands.setMark(r, { color: i });
   }
   /**
    * Removes styles from the currently selected content.
@@ -2991,10 +3047,10 @@ class Ko {
       "underline",
       "strike",
       "code"
-    ]), n = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
+    ]), o = /* @__PURE__ */ new Set(["textColor", "backgroundColor"]);
     this._tiptapEditor.view.focus();
     for (const [r, i] of Object.entries(e))
-      t.has(r) ? this._tiptapEditor.commands.toggleMark(r) : n.has(r) && this._tiptapEditor.commands.toggleMark(r, { color: i });
+      t.has(r) ? this._tiptapEditor.commands.toggleMark(r) : o.has(r) && this._tiptapEditor.commands.toggleMark(r, { color: i });
   }
   /**
    * Gets the currently selected text.
@@ -3019,18 +3075,18 @@ class Ko {
   createLink(e, t) {
     if (e === "")
       return;
-    let { from: n, to: r } = this._tiptapEditor.state.selection;
-    t || (t = this._tiptapEditor.state.doc.textBetween(n, r));
+    const { from: o, to: r } = this._tiptapEditor.state.selection;
+    t || (t = this._tiptapEditor.state.doc.textBetween(o, r));
     const i = this._tiptapEditor.schema.mark("link", { href: e });
     this._tiptapEditor.view.dispatch(
-      this._tiptapEditor.view.state.tr.insertText(t, n, r).addMark(n, n + t.length, i)
+      this._tiptapEditor.view.state.tr.insertText(t, o, r).addMark(o, o + t.length, i)
     );
   }
   /**
    * Checks if the block containing the text cursor can be nested.
    */
   canNestBlock() {
-    const { startPos: e, depth: t } = g(
+    const { startPos: e, depth: t } = k(
       this._tiptapEditor.state.doc,
       this._tiptapEditor.state.selection.from
     );
@@ -3046,7 +3102,7 @@ class Ko {
    * Checks if the block containing the text cursor is nested.
    */
   canUnnestBlock() {
-    const { depth: e } = g(
+    const { depth: e } = k(
       this._tiptapEditor.state.doc,
       this._tiptapEditor.state.selection.from
     );
@@ -3065,7 +3121,7 @@ class Ko {
    * @returns The blocks, serialized as an HTML string.
    */
   async blocksToHTML(e) {
-    return St(e, this._tiptapEditor.schema);
+    return It(e, this._tiptapEditor.schema);
   }
   /**
    * Parses blocks from an HTML string. Tries to create `Block` objects out of any HTML block-level elements, and
@@ -3075,7 +3131,7 @@ class Ko {
    * @returns The blocks parsed from the HTML string.
    */
   async HTMLToBlocks(e) {
-    return It(e, this.schema, this._tiptapEditor.schema);
+    return _t(e, this.schema, this._tiptapEditor.schema);
   }
   /**
    * Serializes blocks into a Markdown string. The output is simplified as Markdown does not support all features of
@@ -3084,7 +3140,7 @@ class Ko {
    * @returns The blocks, serialized as a Markdown string.
    */
   async blocksToMarkdown(e) {
-    return xe(e, this._tiptapEditor.schema);
+    return oo(e, this._tiptapEditor.schema);
   }
   /**
    * Creates a list of blocks from a Markdown string. Tries to create `Block` and `InlineNode` objects based on
@@ -3094,7 +3150,7 @@ class Ko {
    * @returns The blocks parsed from the Markdown string.
    */
   async markdownToBlocks(e) {
-    return Se(e, this.schema, this._tiptapEditor.schema);
+    return ro(e, this.schema, this._tiptapEditor.schema);
   }
   /**
    * Updates the user info for the current user that's shown to other collaborators.
@@ -3108,19 +3164,33 @@ class Ko {
   }
 }
 export {
-  S as BaseSlashMenuItem,
-  Ko as BlockNoteEditor,
-  $e as CustomBlockSerializerExtension,
-  Vo as blockStyles,
-  ot as camelToDataKebab,
-  Yo as createBlockSpec,
-  H as createTipTapBlock,
-  ke as defaultBlockSchema,
-  L as defaultProps,
-  uo as defaultSlashMenuItems,
-  go as getBlockNoteExtensions,
-  de as parse,
-  le as propsToAttributes,
-  ce as render
+  Qo as BlockNoteEditor,
+  ze as CustomBlockSerializerExtension,
+  ao as FormattingToolbarProsemirrorPlugin,
+  io as FormattingToolbarView,
+  uo as HyperlinkToolbarProsemirrorPlugin,
+  bo as SideMenuProsemirrorPlugin,
+  ko as SideMenuView,
+  $e as SlashMenuProsemirrorPlugin,
+  ye as UnreachableCaseError,
+  Jo as blockStyles,
+  rt as camelToDataKebab,
+  Zo as createBlockSpec,
+  O as createTipTapBlock,
+  Mt as defaultBlockSchema,
+  P as defaultProps,
+  Xo as formatKeyboardShortcut,
+  so as formattingToolbarPluginKey,
+  Xe as getBlockNoteExtensions,
+  yo as getDefaultSlashMenuItems,
+  co as hyperlinkToolbarPluginKey,
+  be as isAppleOS,
+  v as mergeCSSClasses,
+  Ce as parse,
+  ve as propsToAttributes,
+  we as render,
+  Ge as setupSuggestionsMenu,
+  go as sideMenuPluginKey,
+  X as slashMenuPluginKey
 };
 //# sourceMappingURL=blocknote.js.map
