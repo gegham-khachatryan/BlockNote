@@ -7,7 +7,7 @@ path: /docs/block-types
 
 <script setup>
 import { useData } from 'vitepress';
-import { getTheme, getStyles } from "./demoUtils";
+import { getTheme, getStyles } from "../demoUtils";
 
 const { isDark } = useData();
 </script>
@@ -32,7 +32,7 @@ BlockNote includes a number of built-in block types, each with their own set of 
 type ParagraphBlock = {
   id: string;
   type: "paragraph";
-  props: DefaultBlockProps;
+  props: DefaultProps;
   content: InlineContent[];
   children: Block[];
 };
@@ -51,14 +51,14 @@ type HeadingBlock = {
   id: string;
   type: "heading";
   props: {
-    level: "1" | "2" | "3" = "1";
-  } & DefaultBlockProps;
+    level: 1 | 2 | 3 = 1;
+  } & DefaultProps;
   content: InlineContent[];
   children: Block[];
 };
 ```
 
-`level:` The heading level, representing a title (`level: "1"`), heading (`level: "2"`), and subheading (`level: "3"`).
+`level:` The heading level, representing a title (`level: 1`), heading (`level: 2`), and subheading (`level: 3`).
 
 ### Bullet List Item
 
@@ -72,7 +72,7 @@ type HeadingBlock = {
 type BulletListItemBlock = {
   id: string;
   type: "bulletListItem";
-  props: DefaultBlockProps;
+  props: DefaultProps;
   content: InlineContent[];
   children: Block[];
 };
@@ -90,18 +90,46 @@ type BulletListItemBlock = {
 type NumberedListItemBlock = {
   id: string;
   type: "numberedListItem";
-  props: DefaultBlockProps;
+  props: DefaultProps;
   content: InlineContent[];
   children: Block[];
 };
 ```
 
-## Default Block Properties
+### Image
 
-While each type of block can have its own set of properties, there are some properties that all built-in block types have by default, which you can find in the definition for `DefaultBlockProps`:
+**Appearance**
+
+<img :src="isDark ? '/img/screenshots/image_type_dark.png' : '/img/screenshots/image_type.png'" alt="image" style="width: 100%">
+
+**Type & Props**
 
 ```typescript
-type DefaultBlockProps = {
+type ImageBlock = {
+  id: string;
+  type: "image";
+  props: {
+    url: string = "",
+    caption: string = "",
+    width: number = 512;
+  } & Omit<DefaultProps, "textAlignment">
+  content: InlineContent[];
+  children: Block[];
+};
+```
+
+`url:` The image URL.
+
+`caption:` The image caption.
+
+`width:` The image width in pixels.
+
+## Default Block Properties
+
+While each type of block can have its own set of properties, there are some properties that all built-in block types have by default, which you can find in the definition for `DefaultProps`:
+
+```typescript
+type DefaultProps = {
   backgroundColor: string = "default";
   textColor: string = "default";
   textAlignment: "left" | "center" | "right" | "justify" = "left";
@@ -123,6 +151,8 @@ In addition to the default block types that BlockNote offers, you can also make 
 ```typescript-vue /App.tsx
 import {
   BlockNoteEditor,
+  BlockSchema,
+  DefaultBlockSchema,
   defaultBlockSchema,
   defaultProps,
 } from "@blocknote/core";
@@ -132,7 +162,7 @@ import {
   createReactBlockSpec,
   InlineContent,
   ReactSlashMenuItem,
-  defaultReactSlashMenuItems,
+  getDefaultReactSlashMenuItems,
 } from "@blocknote/react";
 import "@blocknote/core/style.css";
 import { RiImage2Fill } from "react-icons/ri";
@@ -146,13 +176,16 @@ export default function App() {
       src: {
         default: "https://via.placeholder.com/1000",
       },
+      alt: {
+        default: "image",
+      },
     },
     containsInlineContent: true,
     render: ({ block }) => (
       <div id="image-wrapper">
         <img
           src={block.props.src}
-          alt={"Image"}
+          alt={block.props.alt}
           contentEditable={false}
         />
         <InlineContent />
@@ -160,19 +193,29 @@ export default function App() {
     ),
   });
 
+  // The custom schema, which includes the default blocks and the custom image
+  // block.
+  const customSchema = {
+    // Adds all default blocks.
+    ...defaultBlockSchema,
+    // Adds the custom image block.
+    image: ImageBlock,
+  } satisfies BlockSchema;
+
   // Creates a slash menu item for inserting an image block.
-  const insertImage = new ReactSlashMenuItem<
-    DefaultBlockSchema & { image: typeof ImageBlock }
-  >(
-    "Insert Image",
-    (editor) => {
+  const insertImage: ReactSlashMenuItem<typeof customSchema> = {
+    name: "Insert Image",
+    execute: (editor) => {
       const src: string | null = prompt("Enter image URL");
+      const alt: string | null = prompt("Enter image alt text");
+
       editor.insertBlocks(
         [
           {
             type: "image",
             props: {
               src: src || "https://via.placeholder.com/1000",
+              alt: alt || "image",
             },
           },
         ],
@@ -180,27 +223,24 @@ export default function App() {
         "after"
       );
     },
-    ["image", "img", "picture", "media"],
-    "Media",
-    <RiImage2Fill />,
-    "Insert an image"
-  );
+    aliases: ["image", "img", "picture", "media"],
+    group: "Media",
+    icon: <RiImage2Fill />,
+    hint: "Insert an image",
+  };
 
   // Creates a new editor instance.
   const editor = useBlockNote({
-    theme: "{{ getTheme(isDark) }}",
     // Tells BlockNote which blocks to use.
-    blockSchema: {
-      // Adds all default blocks.
-      ...defaultBlockSchema,
-      // Adds the custom image block.
-      image: ImageBlock,
-    },
-    slashCommands: [...defaultReactSlashMenuItems, insertImage],
+    blockSchema: customSchema,
+    slashMenuItems: [
+      ...getDefaultReactSlashMenuItems(customSchema),
+      insertImage,
+    ],
   });
 
   // Renders the editor instance using a React component.
-  return <BlockNoteView editor={editor} />;
+  return <BlockNoteView editor={editor} theme={"{{ getTheme(isDark) }}"} />;
 }
 ```
 
@@ -213,7 +253,7 @@ export default function App() {
 }
 
 img {
-  width: "100%";
+  width: 100%;
 }
 ```
 
@@ -222,7 +262,7 @@ img {
 ::: info
 While custom blocks open a lot of doors for what you can do with BlockNote, we're still working on the API and there are a few limitations for the kinds of blocks you can create.
 
-We'd love to hear your feedback on Github or in our Discord community!
+We'd love to hear your feedback on GitHub or in our Discord community!
 :::
 
 ### Creating a Custom Block Type

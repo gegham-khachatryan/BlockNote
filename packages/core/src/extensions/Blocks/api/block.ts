@@ -1,5 +1,5 @@
-import { Attribute, Node } from "@tiptap/core";
-import { BlockNoteEditor } from "../../..";
+import { Attribute, Attributes, Node } from "@tiptap/core";
+import { BlockNoteDOMAttributes, BlockNoteEditor } from "../../..";
 import styles from "../nodes/Block.module.css";
 import {
   BlockConfig,
@@ -9,6 +9,8 @@ import {
   TipTapNode,
   TipTapNodeConfig,
 } from "./blockTypes";
+import { mergeCSSClasses } from "../../../shared/utils";
+import { ParseRule } from "prosemirror-model";
 
 export function camelToDataKebab(str: string): string {
   return "data-" + str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
@@ -26,7 +28,7 @@ export function propsToAttributes<
     BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>,
     "render"
   >
-) {
+): Attributes {
   const tiptapAttributes: Record<string, Attribute> = {};
 
   Object.entries(blockConfig.propSchema).forEach(([name, spec]) => {
@@ -36,7 +38,39 @@ export function propsToAttributes<
       // Props are displayed in kebab-case as HTML attributes. If a prop's
       // value is the same as its default, we don't display an HTML
       // attribute for it.
-      parseHTML: (element) => element.getAttribute(camelToDataKebab(name)),
+      parseHTML: (element) => {
+        const value = element.getAttribute(camelToDataKebab(name));
+
+        if (value === null) {
+          return null;
+        }
+
+        if (typeof spec.default === "boolean") {
+          if (value === "true") {
+            return true;
+          }
+
+          if (value === "false") {
+            return false;
+          }
+
+          return null;
+        }
+
+        if (typeof spec.default === "number") {
+          const asNumber = parseFloat(value);
+          const isNumeric =
+            !Number.isNaN(asNumber) && Number.isFinite(asNumber);
+
+          if (isNumeric) {
+            return asNumber;
+          }
+
+          return null;
+        }
+
+        return value;
+      },
       renderHTML: (attributes) =>
         attributes[name] !== spec.default
           ? {
@@ -62,7 +96,7 @@ export function parse<
     BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>,
     "render"
   >
-) {
+): ParseRule[] {
   return [
     {
       tag: "div[data-content-type=" + blockConfig.type + "]",
@@ -119,21 +153,24 @@ export function render<
 export function createBlockSpec<
   BType extends string,
   PSchema extends PropSchema,
-  ContainsInlineContent extends boolean,
+  ContainsInlineContent extends false,
   BSchema extends BlockSchema
 >(
   blockConfig: BlockConfig<BType, PSchema, ContainsInlineContent, BSchema>
-): BlockSpec<BType, PSchema> {
-  const node = createTipTapBlock<BType>({
+): BlockSpec<BType, PSchema, ContainsInlineContent> {
+  const node = createTipTapBlock<
+    BType,
+    ContainsInlineContent,
+    {
+      editor: BlockNoteEditor<BSchema>;
+      domAttributes?: BlockNoteDOMAttributes;
+    }
+  >({
     name: blockConfig.type,
-    content: blockConfig.containsInlineContent ? "inline*" : "",
-    selectable: blockConfig.containsInlineContent,
-
-    addOptions() {
-      return {
-        editor: undefined,
-      };
-    },
+    content: (blockConfig.containsInlineContent
+      ? "inline*"
+      : "") as ContainsInlineContent extends true ? "inline*" : "",
+    selectable: true,
 
     addAttributes() {
       return propsToAttributes(blockConfig);
@@ -151,8 +188,21 @@ export function createBlockSpec<
       return ({ HTMLAttributes, getPos }) => {
         // Create blockContent element
         const blockContent = document.createElement("div");
-        // Sets blockContent class
-        blockContent.className = styles.blockContent;
+        // Add custom HTML attributes
+        const blockContentDOMAttributes =
+          this.options.domAttributes?.blockContent || {};
+        for (const [attribute, value] of Object.entries(
+          blockContentDOMAttributes
+        )) {
+          if (attribute !== "class") {
+            blockContent.setAttribute(attribute, value);
+          }
+        }
+        // Set blockContent & custom classes
+        blockContent.className = mergeCSSClasses(
+          styles.blockContent,
+          blockContentDOMAttributes.class
+        );
         // Add blockContent HTML attribute
         blockContent.setAttribute("data-content-type", blockConfig.type);
         // Add props as HTML attributes in kebab-case with "data-" prefix
@@ -162,7 +212,9 @@ export function createBlockSpec<
 
         // Gets BlockNote editor instance
         const editor = this.options.editor! as BlockNoteEditor<
-          BSchema & { [k in BType]: BlockSpec<BType, PSchema> }
+          BSchema & {
+            [k in BType]: BlockSpec<BType, PSchema, ContainsInlineContent>;
+          }
         >;
         // Gets position of the node
         if (typeof getPos === "boolean") {
@@ -186,13 +238,27 @@ export function createBlockSpec<
 
         // Render elements
         const rendered = blockConfig.render(block as any, editor);
-        // Add inlineContent class to inline content
-        if ("contentDOM" in rendered) {
-          rendered.contentDOM.className = `${
-            rendered.contentDOM.className
-              ? rendered.contentDOM.className + " "
-              : ""
-          }${styles.inlineContent}`;
+        // Add HTML attributes to contentDOM
+        if (blockConfig.containsInlineContent) {
+          const contentDOM = (rendered as { contentDOM: HTMLElement })
+            .contentDOM;
+
+          const inlineContentDOMAttributes =
+            this.options.domAttributes?.inlineContent || {};
+          // Add custom HTML attributes
+          for (const [attribute, value] of Object.entries(
+            inlineContentDOMAttributes
+          )) {
+            if (attribute !== "class") {
+              contentDOM.setAttribute(attribute, value);
+            }
+          }
+          // Merge existing classes with inlineContent & custom classes
+          contentDOM.className = mergeCSSClasses(
+            contentDOM.className,
+            styles.inlineContent,
+            inlineContentDOMAttributes.class
+          );
         }
         // Add elements to blockContent
         blockContent.appendChild(rendered.dom);
@@ -201,29 +267,41 @@ export function createBlockSpec<
           ? {
               dom: blockContent,
               contentDOM: rendered.contentDOM,
+              destroy: rendered.destroy,
             }
           : {
               dom: blockContent,
+              destroy: rendered.destroy,
             };
       };
     },
   });
 
   return {
-    node: node,
+    node: node as TipTapNode<BType, ContainsInlineContent>,
     propSchema: blockConfig.propSchema,
   };
 }
 
-export function createTipTapBlock<Type extends string>(
-  config: TipTapNodeConfig<Type>
-): TipTapNode<Type> {
+export function createTipTapBlock<
+  Type extends string,
+  ContainsInlineContent extends boolean,
+  Options extends {
+    domAttributes?: BlockNoteDOMAttributes;
+  } = {
+    domAttributes?: BlockNoteDOMAttributes;
+  },
+  Storage = any
+>(
+  config: TipTapNodeConfig<Type, ContainsInlineContent, Options, Storage>
+): TipTapNode<Type, ContainsInlineContent, Options, Storage> {
   // Type cast is needed as Node.name is mutable, though there is basically no
   // reason to change it after creation. Alternative is to wrap Node in a new
   // class, which I don't think is worth it since we'd only be changing 1
   // attribute to be read only.
-  return Node.create({
+  return Node.create<Options, Storage>({
     ...config,
     group: "blockContent",
-  }) as TipTapNode<Type>;
+    content: config.content,
+  }) as TipTapNode<Type, ContainsInlineContent, Options, Storage>;
 }
